@@ -1,0 +1,44 @@
+# Compiled class file
+*.class
+
+*.jks
+*.jceks
+*.p12
+#application-keystore.yml
+/Python/
+
+# Log files
+logs/
+
+# Build output
+/target/
+/build/
+/out/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+/.idea_modules/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+pom.xml.*
+mvnw
+mvnw.cmd
+
+# Spring Boot
+.spring-boot-starter-*.jar
+/src/~$Common_Exceptions.xlsx
