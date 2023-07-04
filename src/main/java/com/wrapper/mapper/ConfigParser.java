@@ -2,9 +2,7 @@ package com.wrapper.mapper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.config.ErrorConfig;
 import com.wrapper.symmetric.config.KeyStoreConfig;
 import com.wrapper.symmetric.config.SymmetricConfig;
