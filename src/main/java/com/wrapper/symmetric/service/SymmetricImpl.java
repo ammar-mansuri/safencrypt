@@ -1,7 +1,7 @@
 package com.wrapper.symmetric.service;
 
 import com.wrapper.exceptions.SafencryptException;
-import com.wrapper.symmetric.builder.SymmetricBuilder;
+import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.config.ErrorConfig;
 import com.wrapper.symmetric.config.SymmetricConfig;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
@@ -23,7 +23,6 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.logging.Logger;
 
 import static com.wrapper.symmetric.utils.Utility.*;
 
@@ -45,40 +44,40 @@ public class SymmetricImpl {
     /**
      * Main ENCRYPT Function Call from builder
      *
-     * @param symmetricBuilder
+     * @param safEncrypt
      * @return
      */
     @SneakyThrows
-    public SymmetricCipher encrypt(SymmetricBuilder symmetricBuilder) {
+    public SymmetricCipher encrypt(SafEncrypt safEncrypt) {
 
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(symmetricBuilder.getSymmetricAlgorithm().getLabel());
+        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(safEncrypt.getSymmetricAlgorithm().getLabel());
 
 
-        SecretKey secretKey = symmetricBuilder.getKey();
+        SecretKey secretKey = safEncrypt.getKey();
 
-        if (!isKeyDefined(symmetricBuilder)) {
+        if (!isKeyDefined(safEncrypt)) {
             secretKey = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm), "AES");
         }
 
         if (isGCM(symmetricAlgorithm)) {
-            return encryptWithGCM(GCM_TAG_LENGTH, GCM_IV_SIZE, symmetricBuilder.getSymmetricAlgorithm(), secretKey, symmetricBuilder.getPlainText(), symmetricBuilder.getAssociatedData());
+            return encryptWithGCM(GCM_TAG_LENGTH, GCM_IV_SIZE, safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainText(), safEncrypt.getAssociatedData());
         }
 
-        return encrypt(REST_IV_SIZE, symmetricBuilder.getSymmetricAlgorithm(), secretKey, symmetricBuilder.getPlainText());
+        return encrypt(REST_IV_SIZE, safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainText());
     }
 
     /**
      * Main DECRYPT Function Call from builder
      *
-     * @param symmetricBuilder
+     * @param safEncrypt
      * @return
      */
     @SneakyThrows
-    public SymmetricPlain decrypt(SymmetricBuilder symmetricBuilder) {
-        SymmetricAlgorithm algorithm = symmetricBuilder.getSymmetricAlgorithm();
+    public SymmetricPlain decrypt(SafEncrypt safEncrypt) {
+        SymmetricAlgorithm algorithm = safEncrypt.getSymmetricAlgorithm();
         return isGCM(algorithm) ?
-                decryptWithGCM(GCM_TAG_LENGTH, symmetricBuilder.getSymmetricAlgorithm(), symmetricBuilder.getKey(), symmetricBuilder.getIv(), symmetricBuilder.getCipherText(), symmetricBuilder.getAssociatedData()) :
-                decrypt(symmetricBuilder.getSymmetricAlgorithm(), symmetricBuilder.getKey(), symmetricBuilder.getIv(), symmetricBuilder.getCipherText());
+                decryptWithGCM(GCM_TAG_LENGTH, safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText(), safEncrypt.getAssociatedData()) :
+                decrypt(safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText());
 
     }
 

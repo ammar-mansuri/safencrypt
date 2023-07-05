@@ -1,6 +1,6 @@
 package symmetric.service;
 
-import com.wrapper.symmetric.builder.SymmetricBuilder;
+import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.models.SymmetricPlain;
@@ -20,13 +20,13 @@ class SymmetricImplFunctionalTest {
         byte[] plainText = "Hello World".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption()
+                SafEncrypt.encryption()
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -43,13 +43,13 @@ class SymmetricImplFunctionalTest {
         byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption()
+                SafEncrypt.encryption()
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -68,13 +68,13 @@ class SymmetricImplFunctionalTest {
         secureRandom.nextBytes(key);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption()
+                SafEncrypt.encryption()
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -90,13 +90,13 @@ class SymmetricImplFunctionalTest {
         byte[] key = SymmetricKeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -110,13 +110,13 @@ class SymmetricImplFunctionalTest {
         byte[] plainText = "1232F #$$^%$^ Hello World".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -134,13 +134,13 @@ class SymmetricImplFunctionalTest {
         SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_192_NoPadding;
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(symmetricAlgorithm)
+                SafEncrypt.encryption(symmetricAlgorithm)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -157,13 +157,13 @@ class SymmetricImplFunctionalTest {
         byte[] plainText = "Hello World JCA WRAPPER Using GCM Without AEAD".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -183,13 +183,13 @@ class SymmetricImplFunctionalTest {
         byte[] associatedData = "I am associated data".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                         .generateKey()
                         .plaintext(plainText, associatedData)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext(), associatedData)
@@ -205,13 +205,13 @@ class SymmetricImplFunctionalTest {
         byte[] plainText = "TESTING CBC 128 With PKCS5 PADDING".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
         SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())

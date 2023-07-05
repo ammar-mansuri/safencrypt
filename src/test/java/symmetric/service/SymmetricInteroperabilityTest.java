@@ -1,6 +1,6 @@
 package symmetric.service;
 
-import com.wrapper.symmetric.builder.SymmetricBuilder;
+import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.builder.SymmetricInteroperableBuilder;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricInteroperabilityLanguages;
@@ -92,7 +92,7 @@ class SymmetricInteroperabilityTest {
         byte[] plainText = "Hello World JCA WRAPPER Encrypt For Python".getBytes(StandardCharsets.UTF_8);
 
 
-        SymmetricCipher symmetricCipher = SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
                 .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
                 .plaintext(plainText)
                 .encrypt();
@@ -111,7 +111,7 @@ class SymmetricInteroperabilityTest {
         System.arraycopy(ciphertextBytes, 0, ciphertextTagBytes, 0, ciphertextBytes.length);
         System.arraycopy(tagBytes, 0, ciphertextTagBytes, ciphertextBytes.length, tagBytes.length);
 
-        SymmetricPlain symmetricPlain = SymmetricBuilder.decryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        SymmetricPlain symmetricPlain = SafEncrypt.decryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .key(Base64.getDecoder().decode("2Gn4xCkAioEBk21QY9BWCw==".getBytes()))
                 .iv(Base64.getDecoder().decode("MXA8iL1gvl6i7Qx6".getBytes()))
                 .cipherText(ciphertextTagBytes)

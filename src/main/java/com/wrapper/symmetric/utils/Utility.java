@@ -1,6 +1,6 @@
 package com.wrapper.symmetric.utils;
 
-import com.wrapper.symmetric.builder.SymmetricBuilder;
+import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.models.SymmetricCipherBase64;
@@ -66,8 +66,8 @@ public class Utility {
         return symmetricAlgorithm.getLabel().startsWith("AES_GCM");
     }
 
-    public static boolean isKeyDefined(SymmetricBuilder symmetricBuilder) {
-        return symmetricBuilder.getKey() != null && symmetricBuilder.getKey().getEncoded().length > 0;
+    public static boolean isKeyDefined(SafEncrypt safEncrypt) {
+        return safEncrypt.getKey() != null && safEncrypt.getKey().getEncoded().length > 0;
     }
 
     public static IvParameterSpec generateIv(int IV_LENGTH) {

@@ -3,13 +3,14 @@ package com.wrapper.mapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.config.ErrorConfig;
 import com.wrapper.symmetric.config.KeyStoreConfig;
 import com.wrapper.symmetric.config.SymmetricConfig;
 import com.wrapper.symmetric.config.SymmetricInteroperabilityConfig;
 import lombok.SneakyThrows;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import static com.wrapper.symmetric.utils.Constants.*;
@@ -40,14 +41,20 @@ public class ConfigParser {
         Map<String, String> configMap = objectMapperYaml.readValue(getFile(SAFENCRYPT_ERROR_CONFIG), new TypeReference<>() {
         });
         errorConfig = new ErrorConfig(configMap);
-
-        System.out.println("SymmetricConfig: " + symmetricConfig);
-        System.out.println("InteroperabilityConfig: " + interoperabilityConfig);
-        System.out.println("KeystoreConfig: " + keystoreConfig);
+        
     }
 
-    private static File getFile(String fileName) {
-        return new File(ConfigParser.class.getClassLoader().getResource(fileName).getPath());
+    @SneakyThrows
+    private static byte[] getFile(String fileName) {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        try {
+            if (stream == null) {
+                throw new SafencryptException("Unable to load Config file " + fileName);
+            }
+            return stream.readAllBytes();
+        } catch (Exception e) {
+            throw new SafencryptException("Unable to load Config file " + fileName);
+        }
     }
 
     public static SymmetricConfig getSymmetricConfig() {

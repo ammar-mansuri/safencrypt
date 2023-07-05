@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import static com.wrapper.symmetric.utils.Utility.isGCM;
 import static java.util.Objects.requireNonNull;
 
-public class SymmetricBuilder {
+public class SafEncrypt {
 
     private SymmetricAlgorithm symmetricAlgorithm;
     private SecretKey key;
@@ -30,14 +30,14 @@ public class SymmetricBuilder {
     private byte[] iv;
 
 
-    private static SymmetricBuilder encryption;
+    private static SafEncrypt encryption;
     private SymmetricImpl symmetricImpl;
     private SymmetricConfig symmetricConfig;
     private ErrorConfig errorConfig;
     private ConfigParser configParser = new ConfigParser();
 
 
-    private SymmetricBuilder() {
+    private SafEncrypt() {
         this.symmetricConfig = configParser.getSymmetricConfig();
         this.errorConfig = configParser.getErrorConfig();
         this.symmetricImpl = new SymmetricImpl(symmetricConfig, errorConfig);
@@ -69,30 +69,30 @@ public class SymmetricBuilder {
     }
 
     public static EncryptionKeyBuilder encryption() {
-        encryption = new SymmetricBuilder();
+        encryption = new SafEncrypt();
         return new EncryptionKeyBuilder(encryption, SymmetricAlgorithm.DEFAULT);
     }
 
     public static EncryptionKeyBuilder encryption(SymmetricAlgorithm symmetricAlgorithm) {
-        encryption = new SymmetricBuilder();
+        encryption = new SafEncrypt();
         return new EncryptionKeyBuilder(encryption, symmetricAlgorithm);
     }
 
     public static DecryptKeyBuilder decryption() {
-        encryption = new SymmetricBuilder();
+        encryption = new SafEncrypt();
         return new DecryptKeyBuilder(encryption, SymmetricAlgorithm.DEFAULT);
     }
 
     public static DecryptKeyBuilder decryption(SymmetricAlgorithm symmetricAlgorithm) {
-        encryption = new SymmetricBuilder();
+        encryption = new SafEncrypt();
         return new DecryptKeyBuilder(encryption, symmetricAlgorithm);
     }
 
     public static class EncryptionKeyBuilder {
 
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private EncryptionKeyBuilder(SymmetricBuilder encryption, SymmetricAlgorithm symmetricAlgorithm) {
+        private EncryptionKeyBuilder(SafEncrypt encryption, SymmetricAlgorithm symmetricAlgorithm) {
             this.encryption = encryption;
             this.encryption.symmetricAlgorithm = symmetricAlgorithm;
         }
@@ -118,18 +118,12 @@ public class SymmetricBuilder {
     }
 
     public static class PlaintextBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private PlaintextBuilder(SymmetricBuilder encryption) {
+        private PlaintextBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
-
-        private PlaintextBuilder(SymmetricBuilder encryption, SymmetricAlgorithm symmetricAlgorithm) {
-            this.encryption = encryption;
-            this.encryption.symmetricAlgorithm = symmetricAlgorithm;
-        }
-
-
+        
         @SneakyThrows
         public EncryptionBuilder plaintext(byte[] plaintext) {
             requireNonNull(plaintext);
@@ -149,9 +143,9 @@ public class SymmetricBuilder {
     }
 
     public static class DecryptKeyBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private DecryptKeyBuilder(SymmetricBuilder encryption, SymmetricAlgorithm symmetricAlgorithm) {
+        private DecryptKeyBuilder(SafEncrypt encryption, SymmetricAlgorithm symmetricAlgorithm) {
             this.encryption = encryption;
             this.encryption.symmetricAlgorithm = symmetricAlgorithm;
         }
@@ -164,9 +158,9 @@ public class SymmetricBuilder {
     }
 
     public static class DecryptIVBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private DecryptIVBuilder(SymmetricBuilder encryption) {
+        private DecryptIVBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
 
@@ -178,9 +172,9 @@ public class SymmetricBuilder {
     }
 
     public static class CiphertextBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private CiphertextBuilder(SymmetricBuilder encryption) {
+        private CiphertextBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
 
@@ -203,9 +197,9 @@ public class SymmetricBuilder {
     }
 
     public static class EncryptionBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private EncryptionBuilder(SymmetricBuilder encryption) {
+        private EncryptionBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
 
@@ -237,9 +231,9 @@ public class SymmetricBuilder {
     }
 
     public static class DecryptionBuilder {
-        private SymmetricBuilder encryption;
+        private SafEncrypt encryption;
 
-        private DecryptionBuilder(SymmetricBuilder encryption) {
+        private DecryptionBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
 
