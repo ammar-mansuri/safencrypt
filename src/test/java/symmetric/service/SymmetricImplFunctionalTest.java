@@ -1,6 +1,7 @@
 package symmetric.service;
 
 import com.wrapper.symmetric.builder.SafEncrypt;
+import com.wrapper.symmetric.enums.KeyAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.models.SymmetricPlain;
@@ -221,5 +222,48 @@ class SymmetricImplFunctionalTest {
 
     }
 
+
+    @Test
+    void testSymmetricEncryptionUsingGcmWithPBKeyDefault() {
+
+
+        byte[] plainText = "Hello World JCA WRAPPER Using GCM With AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipher symmetricCipher =
+                SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                        .generateKeyFromPassword("hellow testing gcm 128 with sha 512 key".getBytes())
+                        .plaintext(plainText)
+                        .encrypt();
+
+        SymmetricPlain symmetricPlain =
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .cipherText(symmetricCipher.ciphertext())
+                        .decrypt();
+
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(symmetricPlain.plainText(), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void testSymmetricEncryptionUsingGcmWithPBKeyAlgo() {
+
+        byte[] plainText = "Hello World JCA WRAPPER Using GCM With AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipher symmetricCipher =
+                SafEncrypt.encryption()
+                        .generateKeyFromPassword("hellow testing gcm 128 and key with sha-256".getBytes(), KeyAlgorithm.PBKDF2_With_Hmac_SHA256)
+                        .plaintext(plainText)
+                        .encrypt();
+
+        SymmetricPlain symmetricPlain =
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .cipherText(symmetricCipher.ciphertext())
+                        .decrypt();
+
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(symmetricPlain.plainText(), StandardCharsets.UTF_8));
+    }
 
 }

@@ -2,7 +2,9 @@ package com.wrapper.symmetric.builder;
 
 import com.wrapper.mapper.ConfigParser;
 import com.wrapper.symmetric.config.ErrorConfig;
+import com.wrapper.symmetric.config.PBEKeyConfig;
 import com.wrapper.symmetric.config.SymmetricConfig;
+import com.wrapper.symmetric.enums.KeyAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.models.SymmetricCipher;
@@ -17,6 +19,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 
+import static com.wrapper.symmetric.utils.Utility.getKeySize;
 import static com.wrapper.symmetric.utils.Utility.isGCM;
 import static java.util.Objects.requireNonNull;
 
@@ -33,6 +36,7 @@ public class SafEncrypt {
     private static SafEncrypt encryption;
     private SymmetricImpl symmetricImpl;
     private SymmetricConfig symmetricConfig;
+    private PBEKeyConfig pbeKeySpec;
     private ErrorConfig errorConfig;
     private ConfigParser configParser = new ConfigParser();
 
@@ -40,7 +44,9 @@ public class SafEncrypt {
     private SafEncrypt() {
         this.symmetricConfig = configParser.getSymmetricConfig();
         this.errorConfig = configParser.getErrorConfig();
+        this.pbeKeySpec = configParser.getPbKeyConfig();
         this.symmetricImpl = new SymmetricImpl(symmetricConfig, errorConfig);
+
         encryption = this;
     }
 
@@ -115,6 +121,30 @@ public class SafEncrypt {
 
             return new PlaintextBuilder(encryption);
         }
+
+        @SneakyThrows
+        public PlaintextBuilder generateKeyFromPassword(byte[] password) {
+
+            try {
+                encryption.key = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKeyFromPassword(password, getKeySize(encryption.symmetricAlgorithm)), "AES");
+            } catch (Exception ex) {
+                if (ex instanceof NoSuchAlgorithmException)
+                    throw new SafencryptException(encryption.errorConfig.message("SAF-004", ex, encryption.symmetricAlgorithm.getLabel()));
+            }
+            return new PlaintextBuilder(encryption);
+        }
+
+        @SneakyThrows
+        public PlaintextBuilder generateKeyFromPassword(byte[] password, KeyAlgorithm keyAlgorithm) {
+
+            try {
+                encryption.key = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKeyFromPassword(password, keyAlgorithm, getKeySize(encryption.symmetricAlgorithm)), "AES");
+            } catch (Exception ex) {
+                if (ex instanceof NoSuchAlgorithmException)
+                    throw new SafencryptException(encryption.errorConfig.message("SAF-004", ex, encryption.symmetricAlgorithm.getLabel()));
+            }
+            return new PlaintextBuilder(encryption);
+        }
     }
 
     public static class PlaintextBuilder {
@@ -123,7 +153,7 @@ public class SafEncrypt {
         private PlaintextBuilder(SafEncrypt encryption) {
             this.encryption = encryption;
         }
-        
+
         @SneakyThrows
         public EncryptionBuilder plaintext(byte[] plaintext) {
             requireNonNull(plaintext);

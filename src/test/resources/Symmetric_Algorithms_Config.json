@@ -1,5 +1,4 @@
 {
-  "default-algo": "AES_CBC_256_PKCS5Padding",
   "symmetric-algorithms": [
     "AES_CBC_128_PKCS5Padding",
     "AES_CBC_128_PKCS7Padding",
@@ -12,6 +11,7 @@
     "AES_CBC_128_NoPadding",
     "AES_CBC_128_ISO10126Padding",
     "AESS_CBC_128_PKCS5Padding",
-    "AES_GCM_128_PKCS5Padding"
+    "AES_GCM_128_PKCS5Padding",
+    "AES_CBC_256_NoPPadding"
   ]
 }

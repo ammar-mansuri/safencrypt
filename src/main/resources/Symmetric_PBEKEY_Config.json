@@ -1,0 +1,8 @@
+{
+  "algorithms": [
+    "PBKDF2WithHmacSHA256",
+    "PBKDF2WithHmacSHA512"
+  ],
+  "salt-length": 64,
+  "iterations": 1024
+}
