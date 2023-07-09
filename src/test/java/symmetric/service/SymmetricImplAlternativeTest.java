@@ -4,6 +4,7 @@ import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -33,8 +34,8 @@ public class SymmetricImplAlternativeTest {
                                     .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
                                     .encrypt();
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_NoPadding)
-                            .key(safEncryptContainer.key())
-                            .iv(safEncryptContainer.iv())
+                            .key(((SymmetricCipher) safEncryptContainer).key())
+                            .iv(((SymmetricCipher) safEncryptContainer).iv())
                             .cipherText(Base64.getDecoder().decode("Sj1D4fTU"))
                             .decrypt();
                 }
@@ -62,8 +63,8 @@ public class SymmetricImplAlternativeTest {
                                     .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
                                     .encrypt();
                     SafEncrypt.decryption(SymmetricAlgorithm.AESS_CBC_128_PKCS5Padding)
-                            .key(safEncryptContainer.key())
-                            .iv(safEncryptContainer.iv())
+                            .key(((SymmetricCipher) safEncryptContainer).key())
+                            .iv(((SymmetricCipher) safEncryptContainer).iv())
                             .cipherText(Base64.getDecoder().decode("Sj1D4fTU"))
                             .decrypt();
                 }
@@ -86,9 +87,9 @@ public class SymmetricImplAlternativeTest {
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
                 SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .key(safEncryptContainer.key())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
                         .iv(randomIv)
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt()
         );
         System.err.println(exception.getMessage());
@@ -143,9 +144,9 @@ public class SymmetricImplAlternativeTest {
         SafencryptException deCryptException = Assertions.assertThrows(SafencryptException.class, () -> {
 
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                            .key(safEncryptContainer.key())
+                            .key(((SymmetricCipher) safEncryptContainer).key())
                             .iv(randomIv_Key)
-                            .cipherText(safEncryptContainer.ciphertext())
+                            .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                             .decrypt();
                 }
         );
@@ -155,8 +156,8 @@ public class SymmetricImplAlternativeTest {
 
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                             .key(randomIv_Key)
-                            .iv(safEncryptContainer.iv())
-                            .cipherText(safEncryptContainer.ciphertext())
+                            .iv(((SymmetricCipher) safEncryptContainer).iv())
+                            .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                             .decrypt();
                 }
         );
@@ -189,10 +190,10 @@ public class SymmetricImplAlternativeTest {
         byte[] associatedDataModified = "First test using AEADD".getBytes(StandardCharsets.UTF_8);
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext(), associatedDataModified)
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
 
@@ -215,10 +216,10 @@ public class SymmetricImplAlternativeTest {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomIv);
         SafencryptException exception1 = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
                         .key(randomIv)
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt());
         System.err.println(exception1.getMessage());
 
@@ -227,10 +228,10 @@ public class SymmetricImplAlternativeTest {
         byte[] randomKey = new byte[16];
         secureRandom.nextBytes(randomKey);
         SafencryptException exception2 = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
                         .key(randomKey)
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt());
         System.err.println(exception2.getMessage());
     }
@@ -250,10 +251,10 @@ public class SymmetricImplAlternativeTest {
                 .encrypt();
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext(), associatedDataModified)
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
     }

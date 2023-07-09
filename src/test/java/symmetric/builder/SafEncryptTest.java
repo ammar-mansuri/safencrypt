@@ -4,6 +4,7 @@ import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,14 +49,14 @@ class SafEncryptTest {
         });
 
 
-        SafEncryptContainer.SymmetricCipher symmetricCipher = new SafEncryptContainer.SymmetricCipher("iv".getBytes(StandardCharsets.UTF_8), "key".getBytes(StandardCharsets.UTF_8), "ciphertext".getBytes(StandardCharsets.UTF_8), SymmetricAlgorithm.AES_CBC_192_PKCS5Padding);
+        SafEncryptContainer symmetricCipher = new SymmetricCipher("iv".getBytes(StandardCharsets.UTF_8), "key".getBytes(StandardCharsets.UTF_8), "ciphertext".getBytes(StandardCharsets.UTF_8), SymmetricAlgorithm.AES_CBC_192_PKCS5Padding);
 
 
         Assertions.assertThrows(SafencryptException.class, () -> {
             SafEncrypt.decryption()
-                    .key(symmetricCipher.key())
-                    .iv(symmetricCipher.iv())
-                    .cipherText(symmetricCipher.ciphertext(), "associatedData".getBytes(StandardCharsets.UTF_8))
+                    .key(((SymmetricCipher) symmetricCipher).key())
+                    .iv(((SymmetricCipher) symmetricCipher).iv())
+                    .cipherText(((SymmetricCipher) symmetricCipher).ciphertext(), "associatedData".getBytes(StandardCharsets.UTF_8))
                     .decrypt();
         });
 
@@ -72,9 +73,9 @@ class SafEncryptTest {
 
         SafEncrypt
                 .decryption()
-                .key(safEncryptContainer.key())
-                .iv(safEncryptContainer.iv())
-                .cipherText(safEncryptContainer.ciphertext())
+                .key(((SymmetricCipher) safEncryptContainer).key())
+                .iv(((SymmetricCipher) safEncryptContainer).iv())
+                .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                 .decrypt();
     }
 

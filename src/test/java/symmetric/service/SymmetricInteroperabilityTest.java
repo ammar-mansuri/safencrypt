@@ -4,6 +4,7 @@ import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricInteroperabilityLanguages;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipherBase64;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,14 +23,14 @@ class SymmetricInteroperabilityTest {
                 .plaintext(plainText)
                 .encrypt();
 
-        safEncryptContainer = SafEncrypt.interoperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
-                .keyAlias(safEncryptContainer.keyAlias())
-                .ivBase64(safEncryptContainer.ivBase64())
-                .cipherTextBase64(safEncryptContainer.ciphertextBase64())
+        byte[] decryptedText = SafEncrypt.interoperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
+                .keyAlias(((SymmetricCipherBase64) safEncryptContainer).keyAlias())
+                .ivBase64(((SymmetricCipherBase64) safEncryptContainer).iv())
+                .cipherTextBase64(((SymmetricCipherBase64) safEncryptContainer).cipherText())
                 .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
         System.out.println(safEncryptContainer);
     }
 
@@ -103,13 +104,13 @@ class SymmetricInteroperabilityTest {
         System.arraycopy(ciphertextBytes, 0, ciphertextTagBytes, 0, ciphertextBytes.length);
         System.arraycopy(tagBytes, 0, ciphertextTagBytes, ciphertextBytes.length, tagBytes.length);
 
-        SafEncryptContainer safEncryptContainer = SafEncrypt.decryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        byte[] decryptedText = SafEncrypt.decryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .key(Base64.getDecoder().decode("2Gn4xCkAioEBk21QY9BWCw==".getBytes()))
                 .iv(Base64.getDecoder().decode("MXA8iL1gvl6i7Qx6".getBytes()))
                 .cipherText(ciphertextTagBytes)
                 .decrypt();
 
-        Assertions.assertEquals("Hello World", new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals("Hello World", new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 

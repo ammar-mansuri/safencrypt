@@ -312,7 +312,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SafEncryptContainer decrypt() {
+        public byte[] decrypt() {
             if (encryption.associatedData != null && !isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
             try {
@@ -475,7 +475,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SafEncryptContainer decrypt() {
+        public byte[] decrypt() {
             return encryption.symmetricInteroperable.interoperableDecrypt(encryption);
         }
 

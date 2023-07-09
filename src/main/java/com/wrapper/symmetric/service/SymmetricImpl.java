@@ -6,6 +6,7 @@ import com.wrapper.symmetric.config.ErrorConfig;
 import com.wrapper.symmetric.config.SymmetricConfig;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipher;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -72,7 +73,7 @@ public class SymmetricImpl {
      * @return
      */
     @SneakyThrows
-    public SafEncryptContainer decrypt(SafEncrypt safEncrypt) {
+    public byte[] decrypt(SafEncrypt safEncrypt) {
         SymmetricAlgorithm algorithm = safEncrypt.getSymmetricAlgorithm();
         return isGCM(algorithm) ?
                 decryptWithGCM(GCM_TAG_LENGTH, safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText(), safEncrypt.getAssociatedData()) :
@@ -112,8 +113,7 @@ public class SymmetricImpl {
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
         final byte[] ciphertext = cipher.doFinal(plaintext);
 
-        SafEncryptContainer.SymmetricCipher symmetricCipher = new SafEncryptContainer.SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
-        return new SafEncryptContainer(symmetricCipher, null, null);
+        return new SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
     }
 
 
@@ -140,14 +140,12 @@ public class SymmetricImpl {
         }
 
         final byte[] ciphertext = cipher.doFinal(plaintext);
-
-        SafEncryptContainer.SymmetricCipher symmetricCipher = new SafEncryptContainer.SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
-        return new SafEncryptContainer(symmetricCipher, null, null);
+        return new SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
     }
 
 
     @SneakyThrows
-    protected SafEncryptContainer decrypt(SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText) {
+    protected byte[] decrypt(SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText) {
         log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
@@ -172,13 +170,10 @@ public class SymmetricImpl {
             }
         }
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
-        final byte[] plaintext = cipher.doFinal(cipherText);
-
-        SafEncryptContainer.SymmetricPlain symmetricCipher = new SafEncryptContainer.SymmetricPlain(plaintext, symmetricAlgorithm);
-        return new SafEncryptContainer(null, null, symmetricCipher);
+        return cipher.doFinal(cipherText);
     }
 
-    protected SafEncryptContainer decryptWithGCM(int tagLength, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText, byte[] associatedData) throws Exception {
+    protected byte[] decryptWithGCM(int tagLength, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText, byte[] associatedData) throws Exception {
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
         isIvLengthCorrect(iv, GCM_IV_SIZE, symmetricAlgorithm);
@@ -194,14 +189,11 @@ public class SymmetricImpl {
 
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, iv));
         if (associatedData != null && associatedData.length > 0) cipher.updateAAD(associatedData);
-        final byte[] plaintext;
         try {
-            plaintext = cipher.doFinal(cipherText);
+            return cipher.doFinal(cipherText);
         } catch (AEADBadTagException e) {
             throw new SafencryptException(errorConfig.message("SAF-002", e));
         }
-        SafEncryptContainer.SymmetricPlain symmetricCipher = new SafEncryptContainer.SymmetricPlain(plaintext, symmetricAlgorithm);
-        return new SafEncryptContainer(null, null, symmetricCipher);
     }
 
     @SneakyThrows

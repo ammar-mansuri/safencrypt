@@ -4,6 +4,7 @@ import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.KeyAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,14 +26,16 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
+        SymmetricCipher symmetricCipher = (SymmetricCipher) safEncryptContainer;
+
+        byte[] decryptedText =
                 SafEncrypt.decryption()
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -48,14 +51,14 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
+        byte[] decryptedText =
                 SafEncrypt.decryption()
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -73,14 +76,14 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
+        byte[] decryptedText =
                 SafEncrypt.decryption()
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -95,13 +98,13 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
+        byte[] decryptedText =
                 SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -115,15 +118,15 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -139,15 +142,15 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -162,15 +165,15 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -188,15 +191,15 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText, associatedData)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext(), associatedData)
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext(), associatedData)
                         .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -210,14 +213,14 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
+        byte[] decryptedText =
                 SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
@@ -234,14 +237,14 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -255,14 +258,14 @@ class SymmetricImplFunctionalTest {
                         .plaintext(plainText)
                         .encrypt();
 
-        safEncryptContainer =
-                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
-                        .key(safEncryptContainer.key())
-                        .iv(safEncryptContainer.iv())
-                        .cipherText(safEncryptContainer.ciphertext())
+        byte[] decryptedText =
+                SafEncrypt.decryption(((SymmetricCipher) safEncryptContainer).symmetricAlgorithm())
+                        .key(((SymmetricCipher) safEncryptContainer).key())
+                        .iv(((SymmetricCipher) safEncryptContainer).iv())
+                        .cipherText(((SymmetricCipher) safEncryptContainer).ciphertext())
                         .decrypt();
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(safEncryptContainer.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
 }

@@ -5,6 +5,7 @@ import com.wrapper.symmetric.config.SymmetricConfig;
 import com.wrapper.symmetric.config.SymmetricInteroperabilityConfig;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.symmetric.models.SafEncryptContainer;
+import com.wrapper.symmetric.models.SymmetricCipher;
 import com.wrapper.symmetric.utils.Utility;
 import lombok.SneakyThrows;
 
@@ -56,12 +57,12 @@ public class SymmetricInteroperable {
         symmetricKeyStore.saveKey(alias, secretKey);
 
 
-        return new SafEncryptContainer(null, Utility.getSymmetricEncodedResult(safEncryptContainer.symmetricCipher(), alias), null);
+        return Utility.getSymmetricEncodedResult((SymmetricCipher) safEncryptContainer, alias);
 
     }
 
     @SneakyThrows
-    public SafEncryptContainer interoperableDecrypt(SafEncrypt symmetricBuilder) {
+    public byte[] interoperableDecrypt(SafEncrypt symmetricBuilder) {
 
         Objects.nonNull(symmetricBuilder.getSymmetricInteroperabilityLanguages());
 
