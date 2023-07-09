@@ -152,7 +152,7 @@ class SymmetricImplFunctionalTest {
     }
 
     @Test
-    void testSymmetricEncryptionUsingGcmithoutAssociateData() {
+    void testSymmetricEncryptionUsingGcmWithoutAssociateData() {
 
         byte[] plainText = "Hello World JCA WRAPPER Using GCM Without AEAD".getBytes(StandardCharsets.UTF_8);
 
