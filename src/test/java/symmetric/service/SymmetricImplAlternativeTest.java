@@ -3,7 +3,7 @@ package symmetric.service;
 import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.models.SymmetricCipher;
+import com.wrapper.symmetric.models.SafEncryptContainer;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -27,14 +27,14 @@ public class SymmetricImplAlternativeTest {
         System.err.println("During encryption: " + enCryptException.getMessage());
 
         SafencryptException deCryptException = Assertions.assertThrows(SafencryptException.class, () -> {
-                    SymmetricCipher symmetricCipher =
+                    SafEncryptContainer safEncryptContainer =
                             SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                                     .generateKey()
                                     .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
                                     .encrypt();
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_NoPadding)
-                            .key(symmetricCipher.key())
-                            .iv(symmetricCipher.iv())
+                            .key(safEncryptContainer.key())
+                            .iv(safEncryptContainer.iv())
                             .cipherText(Base64.getDecoder().decode("Sj1D4fTU"))
                             .decrypt();
                 }
@@ -56,14 +56,14 @@ public class SymmetricImplAlternativeTest {
 
 
         SafencryptException deCryptException = Assertions.assertThrows(SafencryptException.class, () -> {
-                    SymmetricCipher symmetricCipher =
+                    SafEncryptContainer safEncryptContainer =
                             SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                                     .generateKey()
                                     .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
                                     .encrypt();
                     SafEncrypt.decryption(SymmetricAlgorithm.AESS_CBC_128_PKCS5Padding)
-                            .key(symmetricCipher.key())
-                            .iv(symmetricCipher.iv())
+                            .key(safEncryptContainer.key())
+                            .iv(safEncryptContainer.iv())
                             .cipherText(Base64.getDecoder().decode("Sj1D4fTU"))
                             .decrypt();
                 }
@@ -78,7 +78,7 @@ public class SymmetricImplAlternativeTest {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomIv);
 
-        SymmetricCipher symmetricCipher =
+        SafEncryptContainer safEncryptContainer =
                 SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .generateKey()
                         .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
@@ -86,9 +86,9 @@ public class SymmetricImplAlternativeTest {
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
                 SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .key(symmetricCipher.key())
+                        .key(safEncryptContainer.key())
                         .iv(randomIv)
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(safEncryptContainer.ciphertext())
                         .decrypt()
         );
         System.err.println(exception.getMessage());
@@ -131,7 +131,7 @@ public class SymmetricImplAlternativeTest {
     @SneakyThrows
     void testSymmetricDecryptionUsingIncorrectIV_Key_Padding() {
 
-        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+        SafEncryptContainer safEncryptContainer = SafEncrypt.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                 .generateKey()
                 .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
                 .encrypt();
@@ -143,9 +143,9 @@ public class SymmetricImplAlternativeTest {
         SafencryptException deCryptException = Assertions.assertThrows(SafencryptException.class, () -> {
 
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                            .key(symmetricCipher.key())
+                            .key(safEncryptContainer.key())
                             .iv(randomIv_Key)
-                            .cipherText(symmetricCipher.ciphertext())
+                            .cipherText(safEncryptContainer.ciphertext())
                             .decrypt();
                 }
         );
@@ -155,8 +155,8 @@ public class SymmetricImplAlternativeTest {
 
                     SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                             .key(randomIv_Key)
-                            .iv(symmetricCipher.iv())
-                            .cipherText(symmetricCipher.ciphertext())
+                            .iv(safEncryptContainer.iv())
+                            .cipherText(safEncryptContainer.ciphertext())
                             .decrypt();
                 }
         );
@@ -164,8 +164,8 @@ public class SymmetricImplAlternativeTest {
         //Incorrect Mode
         /*Exception deCryptException3 = Assertions.assertThrows(Exception.class, () -> {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(symmetricCipher.key(), "AES"));
-            cipher.doFinal(symmetricCipher.ciphertext());
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(safEncryptContainer.key(), "AES"));
+            cipher.doFinal(safEncryptContainer.ciphertext());
         });
         System.err.println(deCryptException3.getMessage());*/
 
@@ -180,7 +180,7 @@ public class SymmetricImplAlternativeTest {
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
 
-        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        SafEncryptContainer safEncryptContainer = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
                 .plaintext(plainText, associatedData)
                 .encrypt();
@@ -189,10 +189,10 @@ public class SymmetricImplAlternativeTest {
         byte[] associatedDataModified = "First test using AEADD".getBytes(StandardCharsets.UTF_8);
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedDataModified)
+                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
+                        .key(safEncryptContainer.key())
+                        .iv(safEncryptContainer.iv())
+                        .cipherText(safEncryptContainer.ciphertext(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
 
@@ -205,7 +205,7 @@ public class SymmetricImplAlternativeTest {
         SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_128_NoPadding;
 
         byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
-        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        SafEncryptContainer safEncryptContainer = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
                 .plaintext(plainText)
                 .encrypt();
@@ -215,10 +215,10 @@ public class SymmetricImplAlternativeTest {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomIv);
         SafencryptException exception1 = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
                         .key(randomIv)
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .iv(safEncryptContainer.iv())
+                        .cipherText(safEncryptContainer.ciphertext())
                         .decrypt());
         System.err.println(exception1.getMessage());
 
@@ -227,10 +227,10 @@ public class SymmetricImplAlternativeTest {
         byte[] randomKey = new byte[16];
         secureRandom.nextBytes(randomKey);
         SafencryptException exception2 = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
                         .key(randomKey)
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .iv(safEncryptContainer.iv())
+                        .cipherText(safEncryptContainer.ciphertext())
                         .decrypt());
         System.err.println(exception2.getMessage());
     }
@@ -244,16 +244,16 @@ public class SymmetricImplAlternativeTest {
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
         byte[] associatedDataModified = "First test using AEADDD".getBytes(StandardCharsets.UTF_8);
 
-        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        SafEncryptContainer safEncryptContainer = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
                 .plaintext(plainText, associatedData)
                 .encrypt();
 
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedDataModified)
+                SafEncrypt.decryption(safEncryptContainer.symmetricAlgorithm())
+                        .key(safEncryptContainer.key())
+                        .iv(safEncryptContainer.iv())
+                        .cipherText(safEncryptContainer.ciphertext(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
     }

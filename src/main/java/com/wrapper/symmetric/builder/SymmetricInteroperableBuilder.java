@@ -1,6 +1,6 @@
+/*
 package com.wrapper.symmetric.builder;
 
-import com.wrapper.exceptions.SafencryptException;
 import com.wrapper.mapper.ConfigParser;
 import com.wrapper.symmetric.config.ErrorConfig;
 import com.wrapper.symmetric.config.KeyStoreConfig;
@@ -17,7 +17,7 @@ import lombok.SneakyThrows;
 
 import static java.util.Objects.requireNonNull;
 
-public class SymmetricInteroperableBuilder {
+public class SymmetricInteroperableBuilder extends SafEncrypt {
 
     private SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages;
     private byte[] plainText;
@@ -219,3 +219,4 @@ public class SymmetricInteroperableBuilder {
 
     }
 }
+*/

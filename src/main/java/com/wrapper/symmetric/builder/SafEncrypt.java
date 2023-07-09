@@ -1,16 +1,16 @@
 package com.wrapper.symmetric.builder;
 
 import com.wrapper.mapper.ConfigParser;
-import com.wrapper.symmetric.config.ErrorConfig;
-import com.wrapper.symmetric.config.PBEKeyConfig;
-import com.wrapper.symmetric.config.SymmetricConfig;
+import com.wrapper.symmetric.config.*;
 import com.wrapper.symmetric.enums.KeyAlgorithm;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
 import com.wrapper.exceptions.SafencryptException;
-import com.wrapper.symmetric.models.SymmetricCipher;
-import com.wrapper.symmetric.models.SymmetricPlain;
+import com.wrapper.symmetric.enums.SymmetricInteroperabilityLanguages;
+import com.wrapper.symmetric.models.SafEncryptContainer;
 import com.wrapper.symmetric.service.SymmetricImpl;
+import com.wrapper.symmetric.service.SymmetricInteroperable;
 import com.wrapper.symmetric.service.SymmetricKeyGenerator;
+import com.wrapper.symmetric.service.SymmetricKeyStore;
 import lombok.SneakyThrows;
 
 import javax.crypto.BadPaddingException;
@@ -33,6 +33,18 @@ public class SafEncrypt {
     private byte[] iv;
 
 
+    /*  Interoperability START */
+    private String keyAlias;
+    private String ivBase64;
+    private String cipherTextBase64;
+    private String tagBase64;
+    private SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages;
+    private SymmetricInteroperabilityConfig symmetricInteroperabilityConfig;
+    private SymmetricInteroperable symmetricInteroperable;
+    private SymmetricKeyStore symmetricKeyStore;
+    private KeyStoreConfig keyStoreConfig;
+    /*  Interoperability  END */
+
     private static SafEncrypt encryption;
     private SymmetricImpl symmetricImpl;
     private SymmetricConfig symmetricConfig;
@@ -46,6 +58,14 @@ public class SafEncrypt {
         this.errorConfig = configParser.getErrorConfig();
         this.pbeKeySpec = configParser.getPbKeyConfig();
         this.symmetricImpl = new SymmetricImpl(symmetricConfig, errorConfig);
+
+        /*  Interoperability START */
+        this.symmetricInteroperabilityConfig = configParser.getInteroperabilityConfig();
+        this.keyStoreConfig = configParser.getKeystoreConfig();
+        this.symmetricKeyStore = new SymmetricKeyStore(keyStoreConfig, errorConfig);
+        this.symmetricInteroperable = new SymmetricInteroperable(symmetricConfig, symmetricKeyStore, symmetricInteroperabilityConfig, symmetricImpl);
+        /*  Interoperability  END */
+
 
         encryption = this;
     }
@@ -73,6 +93,30 @@ public class SafEncrypt {
     public byte[] getIv() {
         return iv;
     }
+
+
+    /*  Interoperability START */
+    public SymmetricInteroperabilityLanguages getSymmetricInteroperabilityLanguages() {
+        return symmetricInteroperabilityLanguages;
+    }
+
+    public String getCipherTextBase64() {
+        return cipherTextBase64;
+    }
+
+    public String getTagBase64() {
+        return tagBase64;
+    }
+
+    public String getIvBase64() {
+        return ivBase64;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+    /*  Interoperability  END */
+
 
     public static EncryptionKeyBuilder encryption() {
         encryption = new SafEncrypt();
@@ -234,7 +278,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SymmetricCipher encrypt() {
+        public SafEncryptContainer encrypt() {
 
             try {
                 return encryption.symmetricImpl.encrypt(encryption);
@@ -268,7 +312,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SymmetricPlain decrypt() {
+        public SafEncryptContainer decrypt() {
             if (encryption.associatedData != null && !isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
             try {
@@ -290,5 +334,150 @@ public class SafEncrypt {
                 throw new SafencryptException(e.getMessage(), e);
             }
         }
+    }
+
+    /*  Interoperability START */
+
+    /* FOR INTEROPERABLE ENCRYPTION */
+    public static InteroperableEncryptionBuilder interoperableEncryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+        encryption = new SafEncrypt();
+        return new InteroperableEncryptionBuilder(encryption, symmetricInteroperabilityLanguages);
+    }
+
+    public static class InteroperableEncryptionBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperableEncryptionBuilder(SafEncrypt encryption, SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+            this.encryption = encryption;
+            this.encryption.symmetricInteroperabilityLanguages = symmetricInteroperabilityLanguages;
+        }
+
+        public InteroperablePlaintextBuilder plaintext(byte[] plaintext) {
+            requireNonNull(plaintext);
+            encryption.plainText = plaintext;
+            return new InteroperablePlaintextBuilder(encryption);
+        }
+    }
+
+    public static class InteroperablePlaintextBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperablePlaintextBuilder(SafEncrypt encryption) {
+            this.encryption = encryption;
+        }
+
+        @SneakyThrows
+        public InteroperablePlaintextBuilder optionalAssociatedData(byte[] associatedData) {
+
+
+            if (!encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo().startsWith("AES_GCM")) {
+                throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
+            }
+
+            encryption.associatedData = associatedData;
+            return this;
+        }
+
+        @SneakyThrows
+        public SafEncryptContainer encrypt() {
+            return encryption.symmetricInteroperable.interoperableEncrypt(encryption);
+        }
+    }
+
+
+    /* FOR INTEROPERABLE DECRYPTION */
+
+    public static InteroperableKeyBuilder interoperableDecryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+
+        encryption = new SafEncrypt();
+        return new InteroperableKeyBuilder(encryption, symmetricInteroperabilityLanguages);
+
+    }
+
+    public static class InteroperableKeyBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperableKeyBuilder(SafEncrypt encryption, SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+            this.encryption = encryption;
+            this.encryption.symmetricInteroperabilityLanguages = symmetricInteroperabilityLanguages;
+        }
+
+        public InteroperableIVBuilder keyAlias(String keyAlias) {
+            encryption.keyAlias = keyAlias;
+            return new InteroperableIVBuilder(encryption);
+        }
+
+    }
+
+    public static class InteroperableIVBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperableIVBuilder(SafEncrypt encryption) {
+            this.encryption = encryption;
+        }
+
+        public InteroperableCiphertextBuilder ivBase64(String iv) {
+            encryption.ivBase64 = iv;
+            return new InteroperableCiphertextBuilder(encryption);
+        }
+
+    }
+
+    public static class InteroperableCiphertextBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperableCiphertextBuilder(SafEncrypt encryption) {
+            this.encryption = encryption;
+        }
+
+        @SneakyThrows
+        public InteroperableDecryptionBuilder cipherTextBase64(String cipherText) {
+
+            SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo());
+            if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
+                throw new SafencryptException(encryption.errorConfig.message("SAF-007"));
+            }
+
+            encryption.cipherTextBase64 = cipherText;
+            return new InteroperableDecryptionBuilder(encryption);
+        }
+
+        @SneakyThrows
+        public InteroperableDecryptionBuilder cipherTextAndTagBase64(String cipherText, String tag) {
+
+            SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo());
+            if (!symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
+                throw new SafencryptException(encryption.errorConfig.message("SAF-008", symmetricAlgorithm.getLabel()));
+            }
+
+            encryption.cipherTextBase64 = cipherText;
+            encryption.tagBase64 = tag;
+            return new InteroperableDecryptionBuilder(encryption);
+        }
+    }
+
+    public static class InteroperableDecryptionBuilder {
+        private SafEncrypt encryption;
+
+        private InteroperableDecryptionBuilder(SafEncrypt encryption) {
+            this.encryption = encryption;
+        }
+
+        @SneakyThrows
+        public InteroperableDecryptionBuilder optionalAssociatedData(byte[] associatedData) {
+
+            if (!encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo().startsWith("AES_GCM")) {
+                throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
+            }
+
+            encryption.associatedData = associatedData;
+            return this;
+        }
+
+        @SneakyThrows
+        public SafEncryptContainer decrypt() {
+            return encryption.symmetricInteroperable.interoperableDecrypt(encryption);
+        }
+
     }
 }

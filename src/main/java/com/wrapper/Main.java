@@ -11,5 +11,22 @@ public class Main {
                 .encrypt();*/
 
 
+//        SafEncrypt.createEncryptionBuilder();
+//        SymmetricInteroperableBuilder.createEncryptionBuilder()
+
+       /*
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.interoperableEncryption(SymmetricInteroperabilityLanguages.CSharp)
+                .plaintext("DAsad".getBytes())
+                .encrypt();
+
+        SafEncrypt.interoperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
+                .keyAlias(symmetricCipherBase64.keyAlias())
+                .ivBase64(symmetricCipherBase64.iv())
+                .cipherTextBase64(symmetricCipherBase64.ciphertext())
+                .decrypt();
+
+                */
+
     }
 }

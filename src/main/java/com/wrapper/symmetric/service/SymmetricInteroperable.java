@@ -1,12 +1,10 @@
 package com.wrapper.symmetric.service;
 
-import com.wrapper.symmetric.builder.SymmetricInteroperableBuilder;
+import com.wrapper.symmetric.builder.SafEncrypt;
 import com.wrapper.symmetric.config.SymmetricConfig;
 import com.wrapper.symmetric.config.SymmetricInteroperabilityConfig;
 import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.models.SymmetricCipher;
-import com.wrapper.symmetric.models.SymmetricCipherBase64;
-import com.wrapper.symmetric.models.SymmetricPlain;
+import com.wrapper.symmetric.models.SafEncryptContainer;
 import com.wrapper.symmetric.utils.Utility;
 import lombok.SneakyThrows;
 
@@ -35,7 +33,7 @@ public class SymmetricInteroperable {
     }
 
     @SneakyThrows
-    public SymmetricCipherBase64 interoperableEncrypt(SymmetricInteroperableBuilder symmetricBuilder) {
+    public SafEncryptContainer interoperableEncrypt(SafEncrypt symmetricBuilder) {
 
         Objects.nonNull(symmetricBuilder.getSymmetricInteroperabilityLanguages());
 
@@ -46,22 +44,24 @@ public class SymmetricInteroperable {
 
         SecretKey secretKey = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm), "AES");
 
-        SymmetricCipher symmetricCipher;
+        SafEncryptContainer safEncryptContainer;
 
         if (isGCM(symmetricAlgorithm)) {
-            symmetricCipher = symmetric.encryptWithGCM(languageDetails.symmetric().tagLength(), languageDetails.symmetric().ivBytes(), symmetricAlgorithm, secretKey, symmetricBuilder.getPlainText(), symmetricBuilder.getAssociatedData());
+            safEncryptContainer = symmetric.encryptWithGCM(languageDetails.symmetric().tagLength(), languageDetails.symmetric().ivBytes(), symmetricAlgorithm, secretKey, symmetricBuilder.getPlainText(), symmetricBuilder.getAssociatedData());
         } else {
-            symmetricCipher = symmetric.encrypt(languageDetails.symmetric().ivBytes(), symmetricAlgorithm, secretKey, symmetricBuilder.getPlainText());
+            safEncryptContainer = symmetric.encrypt(languageDetails.symmetric().ivBytes(), symmetricAlgorithm, secretKey, symmetricBuilder.getPlainText());
         }
 
         String alias = "alias_" + System.currentTimeMillis();
         symmetricKeyStore.saveKey(alias, secretKey);
-        return Utility.getSymmetricEncodedResult(symmetricCipher, alias);
+
+
+        return new SafEncryptContainer(null, Utility.getSymmetricEncodedResult(safEncryptContainer.symmetricCipher(), alias), null);
 
     }
 
     @SneakyThrows
-    public SymmetricPlain interoperableDecrypt(SymmetricInteroperableBuilder symmetricBuilder) {
+    public SafEncryptContainer interoperableDecrypt(SafEncrypt symmetricBuilder) {
 
         Objects.nonNull(symmetricBuilder.getSymmetricInteroperabilityLanguages());
 
@@ -73,21 +73,21 @@ public class SymmetricInteroperable {
 
         if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
 
-            byte[] ciphertextBytes = decodeBase64(symmetricBuilder.getCipherText());
-            byte[] tagBytes = decodeBase64(symmetricBuilder.getTag());
+            byte[] ciphertextBytes = decodeBase64(symmetricBuilder.getCipherTextBase64());
+            byte[] tagBytes = decodeBase64(symmetricBuilder.getTagBase64());
             cipherBytes = new byte[ciphertextBytes.length + tagBytes.length];
             System.arraycopy(ciphertextBytes, 0, cipherBytes, 0, ciphertextBytes.length);
             System.arraycopy(tagBytes, 0, cipherBytes, ciphertextBytes.length, tagBytes.length);
 
         } else {
 
-            cipherBytes = decodeBase64(symmetricBuilder.getCipherText());
+            cipherBytes = decodeBase64(symmetricBuilder.getCipherTextBase64());
         }
 
 
         return isGCM(symmetricAlgorithm) ?
-                symmetric.decryptWithGCM(languageDetails.symmetric().tagLength(), symmetricAlgorithm, symmetricKeyStore.loadKey(symmetricBuilder.getKeyAlias()), decodeBase64(symmetricBuilder.getIv()), cipherBytes, symmetricBuilder.getAssociatedData()) :
-                symmetric.decrypt(symmetricAlgorithm, symmetricKeyStore.loadKey(symmetricBuilder.getKeyAlias()), decodeBase64(symmetricBuilder.getIv()), cipherBytes);
+                symmetric.decryptWithGCM(languageDetails.symmetric().tagLength(), symmetricAlgorithm, symmetricKeyStore.loadKey(symmetricBuilder.getKeyAlias()), decodeBase64(symmetricBuilder.getIvBase64()), cipherBytes, symmetricBuilder.getAssociatedData()) :
+                symmetric.decrypt(symmetricAlgorithm, symmetricKeyStore.loadKey(symmetricBuilder.getKeyAlias()), decodeBase64(symmetricBuilder.getIvBase64()), cipherBytes);
 
     }
 }
