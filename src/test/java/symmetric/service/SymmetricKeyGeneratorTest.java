@@ -1,9 +1,9 @@
 package symmetric.service;
 
 
-import com.wrapper.symmetric.enums.KeyAlgorithm;
-import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.service.SymmetricKeyGenerator;
+import com.safEncrypt.symmetric.enums.KeyAlgorithm;
+import com.safEncrypt.symmetric.enums.SymmetricAlgorithm;
+import com.safEncrypt.symmetric.service.SymmetricKeyGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

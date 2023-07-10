@@ -1,13 +1,9 @@
 package symmetric.service;
 
-import com.wrapper.symmetric.builder.SafEncrypt;
-import com.wrapper.symmetric.builder.SymmetricInteroperableBuilder;
-import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.enums.SymmetricInteroperabilityLanguages;
-import com.wrapper.symmetric.models.SymmetricCipher;
-import com.wrapper.symmetric.models.SymmetricCipherBase64;
-import com.wrapper.symmetric.models.SymmetricPlain;
-import com.wrapper.symmetric.service.SymmetricKeyGenerator;
+import com.safEncrypt.symmetric.builder.SafEncrypt;
+import com.safEncrypt.symmetric.enums.SymmetricAlgorithm;
+import com.safEncrypt.symmetric.enums.SymmetricInteroperabilityLanguages;
+import com.safEncrypt.symmetric.models.SymmetricCipherBase64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,21 +17,19 @@ class SymmetricInteroperabilityTest {
 
         byte[] plainText = "Test for C# Which Uses Algorithm that Doesnt Ensure Integrity".getBytes(StandardCharsets.UTF_8);
 
-        SymmetricCipherBase64 symmetricEncryptionResult = SymmetricInteroperableBuilder
-                .createEncryptionBuilder(SymmetricInteroperabilityLanguages.CSharp)
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.CSharp)
                 .plaintext(plainText)
                 .encrypt();
 
-        SymmetricPlain symmetricPlain = SymmetricInteroperableBuilder
-                .createDecryptionBuilder(SymmetricInteroperabilityLanguages.CSharp)
-                .keyAlias(symmetricEncryptionResult.keyAlias())
-                .ivBase64(symmetricEncryptionResult.iv())
-                .cipherTextBase64(symmetricEncryptionResult.ciphertext())
+        byte[] decryptedText = SafEncrypt.symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
+                .keyAlias(symmetricCipherBase64.keyAlias())
+                .ivBase64(symmetricCipherBase64.iv())
+                .cipherTextBase64(symmetricCipherBase64.cipherText())
                 .decrypt();
 
 
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(symmetricPlain.plainText(), StandardCharsets.UTF_8));
-        System.out.println(symmetricEncryptionResult);
+        System.out.println(symmetricCipherBase64);
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
 
@@ -45,13 +39,12 @@ class SymmetricInteroperabilityTest {
         byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
-        SymmetricCipherBase64 symmetricEncryptionResult = SymmetricInteroperableBuilder
-                .createEncryptionBuilder(SymmetricInteroperabilityLanguages.Python)
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
                 .plaintext(plainText)
                 .optionalAssociatedData(associatedData)
                 .encrypt();
 
-        System.out.println(symmetricEncryptionResult.toString());
+        System.out.println(symmetricCipherBase64.toString());
     }
 
 
@@ -61,13 +54,12 @@ class SymmetricInteroperabilityTest {
         byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
-        SymmetricCipherBase64 symmetricEncryptionResult = SymmetricInteroperableBuilder
-                .createEncryptionBuilder(SymmetricInteroperabilityLanguages.Python)
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
                 .plaintext(plainText)
                 .optionalAssociatedData(associatedData)
                 .encrypt();
 
-        System.out.println(symmetricEncryptionResult.toString());
+        System.out.println(symmetricCipherBase64.toString());
     }
 
 
@@ -76,29 +68,11 @@ class SymmetricInteroperabilityTest {
 
         byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
 
-        SymmetricCipherBase64 symmetricEncryptionResult = SymmetricInteroperableBuilder
-                .createEncryptionBuilder(SymmetricInteroperabilityLanguages.Python)
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
                 .plaintext(plainText)
                 .encrypt();
 
-        System.out.println(symmetricEncryptionResult.toString());
-    }
-
-    @Test
-    void generalEncryptForPython() {
-
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_CBC_256_PKCS5Padding;
-
-        byte[] plainText = "Hello World JCA WRAPPER Encrypt For Python".getBytes(StandardCharsets.UTF_8);
-
-
-        SymmetricCipher symmetricCipher = SafEncrypt.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
-                .plaintext(plainText)
-                .encrypt();
-
-        System.out.println(symmetricCipher);
-
+        System.out.println(symmetricCipherBase64.toString());
     }
 
 
@@ -111,13 +85,13 @@ class SymmetricInteroperabilityTest {
         System.arraycopy(ciphertextBytes, 0, ciphertextTagBytes, 0, ciphertextBytes.length);
         System.arraycopy(tagBytes, 0, ciphertextTagBytes, ciphertextBytes.length, tagBytes.length);
 
-        SymmetricPlain symmetricPlain = SafEncrypt.decryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+        byte[] decryptedText = SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                 .key(Base64.getDecoder().decode("2Gn4xCkAioEBk21QY9BWCw==".getBytes()))
                 .iv(Base64.getDecoder().decode("MXA8iL1gvl6i7Qx6".getBytes()))
                 .cipherText(ciphertextTagBytes)
                 .decrypt();
 
-        Assertions.assertEquals("Hello World", new String(symmetricPlain.plainText(), StandardCharsets.UTF_8));
+        Assertions.assertEquals("Hello World", new String(decryptedText, StandardCharsets.UTF_8));
 
     }
 
