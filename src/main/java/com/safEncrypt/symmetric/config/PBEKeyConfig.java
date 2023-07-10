@@ -1,4 +1,4 @@
-package com.wrapper.symmetric.config;
+package com.safEncrypt.symmetric.config;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

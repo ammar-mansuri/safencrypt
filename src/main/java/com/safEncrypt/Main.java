@@ -1,4 +1,4 @@
-package com.wrapper;
+package com.safEncrypt;
 
 
 public class Main {
@@ -23,7 +23,7 @@ public class Main {
         SafEncrypt.interoperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
                 .keyAlias(symmetricCipherBase64.keyAlias())
                 .ivBase64(symmetricCipherBase64.iv())
-                .cipherTextBase64(symmetricCipherBase64.ciphertext())
+                .cipherTextBase64(symmetricCipherBase64.cipherText())
                 .decrypt();
 
                 */

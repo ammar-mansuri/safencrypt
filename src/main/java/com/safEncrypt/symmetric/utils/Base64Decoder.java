@@ -1,4 +1,4 @@
-package com.wrapper.symmetric.utils;
+package com.safEncrypt.symmetric.utils;
 
 import java.util.Base64;
 

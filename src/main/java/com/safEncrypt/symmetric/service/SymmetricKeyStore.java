@@ -1,8 +1,8 @@
-package com.wrapper.symmetric.service;
+package com.safEncrypt.symmetric.service;
 
-import com.wrapper.exceptions.SafencryptException;
-import com.wrapper.symmetric.config.ErrorConfig;
-import com.wrapper.symmetric.config.KeyStoreConfig;
+import com.safEncrypt.exceptions.SafencryptException;
+import com.safEncrypt.symmetric.config.ErrorConfig;
+import com.safEncrypt.symmetric.config.KeyStoreConfig;
 import lombok.SneakyThrows;
 
 import javax.crypto.SecretKey;

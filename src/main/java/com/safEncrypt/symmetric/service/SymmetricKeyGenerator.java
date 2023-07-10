@@ -1,10 +1,10 @@
-package com.wrapper.symmetric.service;
+package com.safEncrypt.symmetric.service;
 
-import com.wrapper.mapper.ConfigParser;
-import com.wrapper.symmetric.config.PBEKeyConfig;
-import com.wrapper.symmetric.enums.KeyAlgorithm;
-import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.utils.Utility;
+import com.safEncrypt.mapper.ConfigParser;
+import com.safEncrypt.symmetric.config.PBEKeyConfig;
+import com.safEncrypt.symmetric.enums.KeyAlgorithm;
+import com.safEncrypt.symmetric.enums.SymmetricAlgorithm;
+import com.safEncrypt.symmetric.utils.Utility;
 import lombok.SneakyThrows;
 
 import javax.crypto.KeyGenerator;

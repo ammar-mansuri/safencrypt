@@ -1,10 +1,9 @@
-package com.wrapper.symmetric.utils;
+package com.safEncrypt.symmetric.utils;
 
-import com.wrapper.symmetric.builder.SafEncrypt;
-import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.symmetric.models.SafEncryptContainer;
-import com.wrapper.symmetric.models.SymmetricCipher;
-import com.wrapper.symmetric.models.SymmetricCipherBase64;
+import com.safEncrypt.symmetric.builder.SafEncrypt;
+import com.safEncrypt.symmetric.enums.SymmetricAlgorithm;
+import com.safEncrypt.symmetric.models.SymmetricCipher;
+import com.safEncrypt.symmetric.models.SymmetricCipherBase64;
 
 import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
@@ -46,7 +45,7 @@ public class Utility {
         return symmetricAlgorithm.getLabel().split("_")[3];
     }
 
-    public static SafEncryptContainer getSymmetricEncodedResult(final SymmetricCipher symmetricCipher, String keyAlias) {
+    public static SymmetricCipherBase64 getSymmetricEncodedResult(final SymmetricCipher symmetricCipher, String keyAlias) {
         return new SymmetricCipherBase64(
                 Base64.getEncoder().encodeToString(symmetricCipher.iv()),
                 keyAlias,

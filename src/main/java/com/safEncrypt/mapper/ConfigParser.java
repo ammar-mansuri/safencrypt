@@ -1,16 +1,16 @@
-package com.wrapper.mapper;
+package com.safEncrypt.mapper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.wrapper.exceptions.SafencryptException;
-import com.wrapper.symmetric.config.*;
+import com.safEncrypt.exceptions.SafencryptException;
+import com.safEncrypt.symmetric.config.*;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
 import java.util.Map;
 
-import static com.wrapper.symmetric.utils.Constants.*;
+import static com.safEncrypt.symmetric.utils.Constants.*;
 
 
 public class ConfigParser {

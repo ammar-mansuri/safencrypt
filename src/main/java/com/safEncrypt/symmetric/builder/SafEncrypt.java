@@ -1,16 +1,17 @@
-package com.wrapper.symmetric.builder;
+package com.safEncrypt.symmetric.builder;
 
-import com.wrapper.mapper.ConfigParser;
-import com.wrapper.symmetric.config.*;
-import com.wrapper.symmetric.enums.KeyAlgorithm;
-import com.wrapper.symmetric.enums.SymmetricAlgorithm;
-import com.wrapper.exceptions.SafencryptException;
-import com.wrapper.symmetric.enums.SymmetricInteroperabilityLanguages;
-import com.wrapper.symmetric.models.SafEncryptContainer;
-import com.wrapper.symmetric.service.SymmetricImpl;
-import com.wrapper.symmetric.service.SymmetricInteroperable;
-import com.wrapper.symmetric.service.SymmetricKeyGenerator;
-import com.wrapper.symmetric.service.SymmetricKeyStore;
+import com.safEncrypt.mapper.ConfigParser;
+import com.safEncrypt.symmetric.config.*;
+import com.safEncrypt.symmetric.enums.KeyAlgorithm;
+import com.safEncrypt.symmetric.enums.SymmetricAlgorithm;
+import com.safEncrypt.exceptions.SafencryptException;
+import com.safEncrypt.symmetric.enums.SymmetricInteroperabilityLanguages;
+import com.safEncrypt.symmetric.models.SymmetricCipher;
+import com.safEncrypt.symmetric.models.SymmetricCipherBase64;
+import com.safEncrypt.symmetric.service.SymmetricImpl;
+import com.safEncrypt.symmetric.service.SymmetricInteroperable;
+import com.safEncrypt.symmetric.service.SymmetricKeyGenerator;
+import com.safEncrypt.symmetric.service.SymmetricKeyStore;
 import lombok.SneakyThrows;
 
 import javax.crypto.BadPaddingException;
@@ -19,8 +20,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 
-import static com.wrapper.symmetric.utils.Utility.getKeySize;
-import static com.wrapper.symmetric.utils.Utility.isGCM;
+import static com.safEncrypt.symmetric.utils.Utility.getKeySize;
+import static com.safEncrypt.symmetric.utils.Utility.isGCM;
 import static java.util.Objects.requireNonNull;
 
 public class SafEncrypt {
@@ -118,22 +119,22 @@ public class SafEncrypt {
     /*  Interoperability  END */
 
 
-    public static EncryptionKeyBuilder encryption() {
+    public static EncryptionKeyBuilder symmetricEncryption() {
         encryption = new SafEncrypt();
         return new EncryptionKeyBuilder(encryption, SymmetricAlgorithm.DEFAULT);
     }
 
-    public static EncryptionKeyBuilder encryption(SymmetricAlgorithm symmetricAlgorithm) {
+    public static EncryptionKeyBuilder symmetricEncryption(SymmetricAlgorithm symmetricAlgorithm) {
         encryption = new SafEncrypt();
         return new EncryptionKeyBuilder(encryption, symmetricAlgorithm);
     }
 
-    public static DecryptKeyBuilder decryption() {
+    public static DecryptKeyBuilder symmetricDecryption() {
         encryption = new SafEncrypt();
         return new DecryptKeyBuilder(encryption, SymmetricAlgorithm.DEFAULT);
     }
 
-    public static DecryptKeyBuilder decryption(SymmetricAlgorithm symmetricAlgorithm) {
+    public static DecryptKeyBuilder symmetricDecryption(SymmetricAlgorithm symmetricAlgorithm) {
         encryption = new SafEncrypt();
         return new DecryptKeyBuilder(encryption, symmetricAlgorithm);
     }
@@ -278,7 +279,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SafEncryptContainer encrypt() {
+        public SymmetricCipher encrypt() {
 
             try {
                 return encryption.symmetricImpl.encrypt(encryption);
@@ -339,7 +340,7 @@ public class SafEncrypt {
     /*  Interoperability START */
 
     /* FOR INTEROPERABLE ENCRYPTION */
-    public static InteroperableEncryptionBuilder interoperableEncryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+    public static InteroperableEncryptionBuilder symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
         encryption = new SafEncrypt();
         return new InteroperableEncryptionBuilder(encryption, symmetricInteroperabilityLanguages);
     }
@@ -379,7 +380,7 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public SafEncryptContainer encrypt() {
+        public SymmetricCipherBase64 encrypt() {
             return encryption.symmetricInteroperable.interoperableEncrypt(encryption);
         }
     }
@@ -387,7 +388,7 @@ public class SafEncrypt {
 
     /* FOR INTEROPERABLE DECRYPTION */
 
-    public static InteroperableKeyBuilder interoperableDecryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
+    public static InteroperableKeyBuilder symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages) {
 
         encryption = new SafEncrypt();
         return new InteroperableKeyBuilder(encryption, symmetricInteroperabilityLanguages);

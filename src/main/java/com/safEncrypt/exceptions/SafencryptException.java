@@ -1,4 +1,4 @@
-package com.wrapper.exceptions;
+package com.safEncrypt.exceptions;
 
 public class SafencryptException extends Exception {
 

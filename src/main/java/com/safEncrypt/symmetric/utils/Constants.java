@@ -1,4 +1,4 @@
-package com.wrapper.symmetric.utils;
+package com.safEncrypt.symmetric.utils;
 
 public class Constants {
 
