@@ -3,14 +3,14 @@ package com.safEncrypt.mapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.safEncrypt.config.*;
 import com.safEncrypt.exceptions.SafencryptException;
-import com.safEncrypt.symmetric.config.*;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
 import java.util.Map;
 
-import static com.safEncrypt.symmetric.utils.Constants.*;
+import static com.safEncrypt.utils.Constants.*;
 
 
 public class ConfigParser {
@@ -19,7 +19,7 @@ public class ConfigParser {
     private static SymmetricInteroperabilityConfig interoperabilityConfig;
     private static KeyStoreConfig keystoreConfig;
 
-    private static PBEKeyConfig PBEKeyConfig;
+    private static com.safEncrypt.config.PBEKeyConfig PBEKeyConfig;
     private static ErrorConfig errorConfig;
 
 

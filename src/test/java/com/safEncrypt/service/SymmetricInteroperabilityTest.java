@@ -1,0 +1,98 @@
+package com.safEncrypt.service;
+
+import com.safEncrypt.builder.SafEncrypt;
+import com.safEncrypt.enums.SymmetricAlgorithm;
+import com.safEncrypt.enums.SymmetricInteroperabilityLanguages;
+import com.safEncrypt.models.SymmetricCipherBase64;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+class SymmetricInteroperabilityTest {
+
+    @Test
+    void testSymmetricInteroperabilityWithCSharp() {
+
+        byte[] plainText = "Test for C# Which Uses Algorithm that Doesnt Ensure Integrity".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.CSharp)
+                .plaintext(plainText)
+                .encrypt();
+
+        byte[] decryptedText = SafEncrypt.symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages.CSharp)
+                .keyAlias(symmetricCipherBase64.keyAlias())
+                .ivBase64(symmetricCipherBase64.iv())
+                .cipherTextBase64(symmetricCipherBase64.cipherText())
+                .decrypt();
+
+
+        System.out.println(symmetricCipherBase64);
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
+    }
+
+
+    @Test
+    void testSymmetricEncryptionInteroperabilityWithPythonWithGcmAndAssociateData() {
+
+        byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
+        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
+                .plaintext(plainText)
+                .optionalAssociatedData(associatedData)
+                .encrypt();
+
+        System.out.println(symmetricCipherBase64.toString());
+    }
+
+
+    @Test
+    void testSymmetricDecryptionInteroperabilityWithPythonWithGcmAndAssociateData() {
+
+        byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
+        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
+                .plaintext(plainText)
+                .optionalAssociatedData(associatedData)
+                .encrypt();
+
+        System.out.println(symmetricCipherBase64.toString());
+    }
+
+
+    @Test
+    void testSymmetricEncryptionInteroperabilityWithPython() {
+
+        byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
+                .plaintext(plainText)
+                .encrypt();
+
+        System.out.println(symmetricCipherBase64.toString());
+    }
+
+
+    @Test
+    void generalDecryptFromPython() {
+
+        byte[] ciphertextBytes = Base64.getDecoder().decode("lJipwcZuQ+0no1s=".getBytes());
+        byte[] tagBytes = Base64.getDecoder().decode("ypgsDoaFKGj06ljQ".getBytes());
+        byte[] ciphertextTagBytes = new byte[ciphertextBytes.length + tagBytes.length];
+        System.arraycopy(ciphertextBytes, 0, ciphertextTagBytes, 0, ciphertextBytes.length);
+        System.arraycopy(tagBytes, 0, ciphertextTagBytes, ciphertextBytes.length, tagBytes.length);
+
+        byte[] decryptedText = SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+                .key(Base64.getDecoder().decode("2Gn4xCkAioEBk21QY9BWCw==".getBytes()))
+                .iv(Base64.getDecoder().decode("MXA8iL1gvl6i7Qx6".getBytes()))
+                .cipherText(ciphertextTagBytes)
+                .decrypt();
+
+        Assertions.assertEquals("Hello World", new String(decryptedText, StandardCharsets.UTF_8));
+
+    }
+
+}

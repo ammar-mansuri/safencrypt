@@ -5,24 +5,14 @@
       "symmetric": {
         "default-algo": "AES_GCM_256_NoPadding",
         "iv-bytes": 12,
-        "tag-length": 96,
-        "resultant": "BASE-64"
+        "tag-bits": 96
       }
     },
     "CSharp": {
       "library-Provider": "Microsoft",
       "symmetric": {
         "default-algo": "AES_CBC_128_PKCS7Padding",
-        "iv-bytes": 16,
-        "resultant": "BASE-64"
-      }
-    },
-    "DotNet": {
-      "library-Provider": "Microsoft",
-      "symmetric": {
-        "default-algo": "AES_CBC_128_PKCS7Padding",
-        "iv-bytes": 16,
-        "resultant": "BASE-64"
+        "iv-bytes": 16
       }
     }
   }

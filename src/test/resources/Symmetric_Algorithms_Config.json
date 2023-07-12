@@ -13,5 +13,14 @@
     "AESS_CBC_128_PKCS5Padding",
     "AES_GCM_128_PKCS5Padding",
     "AES_CBC_256_NoPPadding"
-  ]
+  ],
+  "constraints": {
+    "AES_CBC": {
+      "iv-bytes": 16
+    },
+    "AES_GCM": {
+      "iv-bytes": 12,
+      "tag-bits": 96
+    }
+  }
 }

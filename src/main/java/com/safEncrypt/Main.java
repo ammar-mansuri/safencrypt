@@ -1,10 +1,24 @@
 package com.safEncrypt;
 
 
+import com.safEncrypt.builder.SafEncrypt;
+import com.safEncrypt.enums.SymmetricInteroperabilityLanguages;
+import com.safEncrypt.models.SymmetricCipher;
+
 public class Main {
     public static void main(String[] args) {
 
 
+       /* SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
+                .plaintext("ds".getBytes())
+                .optionalAssociatedData(null)
+                .encrypt();
+
+        SafEncrypt.symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages.Python)
+                .keyAlias("sds")
+                .ivBase64("ddfadad")
+                .cipherTextBase64("sddas");
+*/
         /*Cipher xx = SafeEncrypt.SymmetricEncryption()
                 .loadKey("dsadasdsa".getBytes())
                 .plaintext("adads".getBytes())
