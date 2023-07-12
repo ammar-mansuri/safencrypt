@@ -39,11 +39,11 @@ Install dependencies
 3. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
 
 ```java
-    SymmetricBuilder.encryption()
+    SafEncrypt.symmetricEncryption()
 ```
 
 ```java
-    SymmetricBuilder.decryption()
+    SafEncrypt.decryption()
 ```
 
 4. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
@@ -51,11 +51,11 @@ Install dependencies
 5. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
 
 ```java
-    SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 ```java
-    SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
@@ -103,13 +103,13 @@ SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_G
         byte[] plainText = "Hello World".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption()
+                SafEncrypt.symmetricEncryption()
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+        byte[] decryptedText =
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -126,13 +126,13 @@ Example1: Generating the key yourself, and loading any key using the loadKey met
         secureRandom.nextBytes(key);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption()
+                SafEncrypt.symmetricEncryption()
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+        byte[] decryptedText =
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -146,13 +146,13 @@ Example2: Generating the key from the library, and loading any key using the loa
         byte[] key = SymmetricKeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption()
+        byte[] decryptedText =
+                SafEncrypt.decryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -165,13 +165,13 @@ Example2: Generating the key from the library, and loading any key using the loa
         byte[] plainText = "1232F #$$^%$^ Hello World".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+        byte[] decryptedText =
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -186,13 +186,13 @@ Example2: Generating the key from the library, and loading any key using the loa
         SecretKey secretKey = KeyGenerator.generateSymmetricKey(symmetricAlgorithm);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(symmetricAlgorithm)
+                SafEncrypt.symmetricEncryption(symmetricAlgorithm)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+        byte[] decryptedText =
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -206,13 +206,13 @@ Example2: Generating the key from the library, and loading any key using the loa
         byte[] associatedData = "I am associated data".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
                         .generateKey()
                         .plaintext(plainText, associatedData)
                         .encrypt();
 
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(symmetricCipher.symmetricAlgorithm())
+        byte[] decryptedText =
+                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext(), associatedData)
@@ -225,13 +225,13 @@ Example2: Generating the key from the library, and loading any key using the loa
         byte[] plainText = "TESTING CBC 128 With PKCS5 PADDING".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher =
-                SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
         
-        SymmetricPlain symmetricPlain =
-                SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+        byte[] decryptedText =
+                SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
