@@ -60,7 +60,7 @@ class SymmetricImplFunctionalTest {
     }
 
     @Test
-    void testSymmetricEncryptionUsingKeyLoading2() {
+    void testSymmetricEncryptionUsingKeyLoading2_3() {
 
         byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
         byte[] key = new byte[16];
@@ -101,6 +101,27 @@ class SymmetricImplFunctionalTest {
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
                         .decrypt();
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void testSymmetricEncryptionUsingPassword2_1() {
+
+        byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .generateKeyFromPassword("strongPassword".getBytes())
+                        .plaintext(plainText)
+                        .encrypt();
+
+        byte[] decryptedText =
+                SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .cipherText(symmetricCipher.ciphertext())
+                        .decrypt();
+
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 

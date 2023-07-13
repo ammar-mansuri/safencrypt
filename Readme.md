@@ -9,7 +9,9 @@ A cryptographic library that aims to ease down the process of symmetric encrypti
 
 ## Run Locally
 
-Clone the project
+Option#1:
+
+Clone the project from Github: https://
 
 ```bash
   git clone https://link-to-project
@@ -21,11 +23,32 @@ Go to the project directory
   cd my-project
 ```
 
-Install dependencies
+Create a local Snapshot
 
 ```bash
   mvn clean install
 ```
+
+Import using maven in your project
+
+```bash
+<dependency>
+    <groupId>org.tu.clausthal</groupId>
+    <artifactId>safencrypt</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+
+Option#2:
+
+Place the provided SafEncrypt JAR directly as a library in your project.
+
+IntelliJ: https://www.jetbrains.com/help/idea/working-with-module-dependencies.html
+
+Eclipse: https://www.testingdocs.com/adding-an-external-library-to-an-eclipse-project/
+
+Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 
 
 
@@ -39,11 +62,11 @@ Install dependencies
 3. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
 
 ```java
-    SafEncrypt.symmetricEncryption()
+    SymmetricBuilder.encryption()
 ```
 
 ```java
-    SafEncrypt.decryption()
+    SymmetricBuilder.decryption()
 ```
 
 4. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
@@ -51,11 +74,11 @@ Install dependencies
 5. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
 
 ```java
-    SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 ```java
-    SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
@@ -83,17 +106,38 @@ OR (As the default encoding in java is UTF-8)
 ```
 ## Usage Examples [Symmetric Key Generation]
 
-1. You want to geneate a symmetric key using the library defaults?
+1. You want to geneate a symmetric key using the library defaults? The default algorithm generates a 128 bit key for AES.
 
 ```java
 SecretKey secretKey = KeyGenerator.generateSymmetricKey();
 ```
 
-2. You want to geneate a symmetric key specifying an algorithm for which the you want to use the key?
+2. You want to generate a symmetric key specifying an algorithm for which the you want to use the key?
 
 ```java
 SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_GCM_128_NoPadding);
 ```
+
+3. You want to use a password to generate the key? The wrapper support a default method for password based key generate as per the algortihm PBKDF2WithHmacSHA256. The usage is as follows:
+
+```java
+SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .generateKeyFromPassword("strongPassword".getBytes())
+                        .plaintext(plainText)
+                        .encrypt();
+```
+
+4. You want to use a password to generate the key specifying the algorithm for password based key generation? The wrapper supports two algortihms currenlty for password based key generation. The algortihm can be specified as below:
+
+```java
+SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .generateKeyFromPassword("strongPassword".getBytes(), KeyAlgorithm.PBKDF2_With_Hmac_SHA512)
+                        .plaintext(plainText)
+                        .encrypt();
+```
+
 
 ## Usage Examples [Symmetric Encryption/Decryption]
 
@@ -116,23 +160,21 @@ SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_G
                         .decrypt();
 ```
 
-2. You want to encrypt/decrypt the data using the Safe Default Algorithm from the library, but you want to specify the key yourself? [Allowed but not Recommended! Should only be used if the secure key is already generated, Prefer using the Library Default Key Generation]
+2. You want to encrypt/decrypt the data using the Safe Default Algorithm from the library, but you want to specify the key yourself?
 
-Example1: Generating the key yourself, and loading any key using the loadKey method
+Example1: Generation on the key just by providing Password, in the loadKey method
+
 ```java
         byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
-        byte[] key = new byte[16];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(key);
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption()
-                        .loadKey(key)
+                        .generateKeyFromPassword("strongPassword".getBytes())
                         .plaintext(plainText)
                         .encrypt();
 
         byte[] decryptedText =
-                SafEncrypt.decryption()
+                SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -147,6 +189,27 @@ Example2: Generating the key from the library, and loading any key using the loa
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                        .loadKey(key)
+                        .plaintext(plainText)
+                        .encrypt();
+
+        byte[] decryptedText =
+                SafEncrypt.decryption()
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .cipherText(symmetricCipher.ciphertext())
+                        .decrypt();
+```
+
+Example3: Generating the key yourself, and loading any key using the loadKey method [Allowed but not Recommended]
+```java
+        byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
+        byte[] key = new byte[16];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(key);
+
+        SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption()
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
