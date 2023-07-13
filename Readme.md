@@ -42,7 +42,7 @@ Import using maven in your project
 
 Option#2:
 
-Place the provided SafEncrypt JAR directly as a library in your project.
+Place the provided 'safencrypt-1.0-SNAPSHOT.jar' JAR directly as a library in your project.
 
 IntelliJ: https://www.jetbrains.com/help/idea/working-with-module-dependencies.html
 
@@ -55,18 +55,18 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 
 ## Notes
 
-1. Throught the library, the algorithms are used in the specified notation "AES_GCM_128_NoPadding". The breakdown of which is Algorithm+Mode+KeyLenght+Padding. 
+1. Through out the library, the algorithms are used in the specified notation "AES_GCM_128_NoPadding". The breakdown of which is Algorithm+Mode+KeyLength+Padding. 
 
 2. The library uses safe defaults for the creation of Initialization Vector (IV) during encryption, which is returned back to the user for further usage (decryption).
 
 3. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
 
 ```java
-    SymmetricBuilder.encryption()
+    SymmetricBuilder.symmetricEncryption()
 ```
 
 ```java
-    SymmetricBuilder.decryption()
+    SymmetricBuilder.symmetricDecryption()
 ```
 
 4. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
@@ -74,11 +74,11 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 5. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
 
 ```java
-    SymmetricBuilder.encryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SymmetricBuilder.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 ```java
-    SymmetricBuilder.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SymmetricBuilder.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
@@ -118,7 +118,7 @@ SecretKey secretKey = KeyGenerator.generateSymmetricKey();
 SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_GCM_128_NoPadding);
 ```
 
-3. You want to use a password to generate the key? The wrapper support a default method for password based key generate as per the algortihm PBKDF2WithHmacSHA256. The usage is as follows:
+3. You want to provide safEncrypt a password to generate the key? The wrapper support a default method for password based key generate as per the algorithm PBKDF2WithHmacSHA256. The usage is as follows:
 
 ```java
 SymmetricCipher symmetricCipher =
@@ -128,7 +128,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 ```
 
-4. You want to use a password to generate the key specifying the algorithm for password based key generation? The wrapper supports two algortihms currenlty for password based key generation. The algortihm can be specified as below:
+4. You want to provide safEncrypt a password to generate the key specify a key derviation algorithm as well? The wrapper supports two algorithm [PBKDF2WithHmacSHA256, PBKDF2WithHmacSHA512] currently for password based key generation. The algorithm can be specified as below:
 
 ```java
 SymmetricCipher symmetricCipher =

@@ -19,11 +19,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 import static com.safEncrypt.utils.Utility.getKeySize;
 import static com.safEncrypt.utils.Utility.isGCM;
-import static java.util.Objects.requireNonNull;
 
 public class SafEncrypt {
 
@@ -163,7 +163,7 @@ public class SafEncrypt {
 
         @SneakyThrows
         public PlaintextBuilder loadKey(byte[] key) {
-            if (key == null)
+            if (key == null || StringUtils.isBlank(new String(key, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-018"));
 
             encryption.key = new SecretKeySpec(key, "AES");
@@ -185,8 +185,8 @@ public class SafEncrypt {
 
         @SneakyThrows
         public PlaintextBuilder generateKeyFromPassword(byte[] password) {
-            if (password == null)
-                throw new SafencryptException(encryption.errorConfig.message("SAF-020"));
+            if (password == null || StringUtils.isBlank(new String(password, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-031"));
 
             try {
                 encryption.key = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKeyFromPassword(password, getKeySize(encryption.symmetricAlgorithm)), "AES");
@@ -223,7 +223,7 @@ public class SafEncrypt {
 
         @SneakyThrows
         public EncryptionBuilder plaintext(byte[] plaintext) {
-            if (plaintext == null)
+            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
             encryption.plainText = plaintext;
             return new EncryptionBuilder(encryption);
@@ -231,8 +231,11 @@ public class SafEncrypt {
 
         @SneakyThrows
         public EncryptionBuilder plaintext(byte[] plaintext, byte[] associatedData) {
-            if (plaintext == null)
+            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
+
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
 
             if (!isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
@@ -253,7 +256,7 @@ public class SafEncrypt {
 
         @SneakyThrows
         public DecryptIVBuilder key(byte[] key) {
-            if (key == null)
+            if (key == null || StringUtils.isBlank(new String(key, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-018"));
 
             encryption.key = new SecretKeySpec(key, "AES");
@@ -270,7 +273,7 @@ public class SafEncrypt {
 
         @SneakyThrows
         public CiphertextBuilder iv(byte[] iv) {
-            if (iv == null)
+            if (iv == null || StringUtils.isBlank(new String(iv, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-022"));
 
             encryption.iv = iv;
@@ -287,7 +290,7 @@ public class SafEncrypt {
 
         @SneakyThrows
         public DecryptionBuilder cipherText(byte[] cipherText) {
-            if (cipherText == null)
+            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
 
             encryption.cipherText = cipherText;
@@ -296,8 +299,12 @@ public class SafEncrypt {
 
         @SneakyThrows
         public DecryptionBuilder cipherText(byte[] cipherText, byte[] associatedData) {
-            if (cipherText == null)
+
+            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
+
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
 
             if (!isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
@@ -416,6 +423,8 @@ public class SafEncrypt {
         @SneakyThrows
         public InteroperablePlaintextBuilder optionalAssociatedData(byte[] associatedData) {
 
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-025"));
 
             if (!encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo().startsWith("AES_GCM")) {
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
@@ -474,7 +483,7 @@ public class SafEncrypt {
         @SneakyThrows
         public InteroperableCiphertextBuilder ivBase64(String iv) {
             if (StringUtils.isBlank(iv))
-                throw new SafencryptException(encryption.errorConfig.message("SAF-025"));
+                throw new SafencryptException(encryption.errorConfig.message("SAF-022"));
             encryption.ivBase64 = iv;
             return new InteroperableCiphertextBuilder(encryption);
         }
@@ -492,7 +501,7 @@ public class SafEncrypt {
         public InteroperableDecryptionBuilder cipherTextBase64(String cipherText) {
 
             if (StringUtils.isBlank(cipherText))
-                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
+                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
 
             final String languageName = encryption.getSymmetricInteroperabilityLanguages().name();
             SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(languageName).symmetric().defaultAlgo());
@@ -508,7 +517,7 @@ public class SafEncrypt {
         public InteroperableDecryptionBuilder cipherTextAndTagBase64(String cipherText, String tag) {
 
             if (StringUtils.isBlank(cipherText))
-                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
+                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
 
             if (StringUtils.isBlank(tag))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-027"));
@@ -534,6 +543,9 @@ public class SafEncrypt {
 
         @SneakyThrows
         public InteroperableDecryptionBuilder optionalAssociatedData(byte[] associatedData) {
+
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-025"));
 
             if (!encryption.symmetricInteroperabilityConfig.languageDetails(encryption.getSymmetricInteroperabilityLanguages().name()).symmetric().defaultAlgo().startsWith("AES_GCM")) {
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
