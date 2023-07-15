@@ -34,14 +34,12 @@ class SymmetricInteroperabilityTest {
 
 
     @Test
-    void testSymmetricEncryptionInteroperabilityWithPythonWithGcmAndAssociateData() {
+    void testSymmetricEncryptionInteroperabilityWithPythonWithCBC() {
 
         byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
-        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
                 .plaintext(plainText)
-                .optionalAssociatedData(associatedData)
                 .encrypt();
 
         System.out.println(symmetricCipherBase64.toString());
@@ -49,14 +47,12 @@ class SymmetricInteroperabilityTest {
 
 
     @Test
-    void testSymmetricDecryptionInteroperabilityWithPythonWithGcmAndAssociateData() {
+    void testSymmetricDecryptionInteroperabilityWithPythonWithCBC() {
 
         byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
-        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
                 .plaintext(plainText)
-                .optionalAssociatedData(associatedData)
                 .encrypt();
 
         System.out.println(symmetricCipherBase64.toString());
@@ -93,6 +89,27 @@ class SymmetricInteroperabilityTest {
 
         Assertions.assertEquals("Hello World", new String(decryptedText, StandardCharsets.UTF_8));
 
+    }
+
+    @Test
+    void testSymmetricEncryptionInteroperabilityWithJavaScript_GCM() {
+
+        byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
+        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Sample_JavaScript)
+                .plaintext(plainText)
+                .optionalAssociatedData(associatedData)
+                .encrypt();
+
+        byte[] decryptedText = SafEncrypt.symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages.Sample_JavaScript)
+                .keyAlias(symmetricCipherBase64.keyAlias())
+                .ivBase64(symmetricCipherBase64.iv())
+                .cipherTextBase64(symmetricCipherBase64.cipherText())
+                .optionalAssociatedData(associatedData)
+                .decrypt();
+
+        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
 
 }

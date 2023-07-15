@@ -62,11 +62,11 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 3. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
 
 ```java
-    SymmetricBuilder.symmetricEncryption()
+    SafEncrypt.symmetricEncryption()
 ```
 
 ```java
-    SymmetricBuilder.symmetricDecryption()
+    SafEncrypt.symmetricDecryption()
 ```
 
 4. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
@@ -74,11 +74,11 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 5. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
 
 ```java
-    SymmetricBuilder.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 ```java
-    SymmetricBuilder.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+    SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
 5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 

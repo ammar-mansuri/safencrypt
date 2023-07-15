@@ -39,7 +39,6 @@ public class SafEncrypt {
     private String keyAlias;
     private String ivBase64;
     private String cipherTextBase64;
-    private String tagBase64;
     private SymmetricInteroperabilityLanguages symmetricInteroperabilityLanguages;
     private SymmetricInteroperabilityConfig symmetricInteroperabilityConfig;
     private SymmetricInteroperable symmetricInteroperable;
@@ -106,9 +105,6 @@ public class SafEncrypt {
         return cipherTextBase64;
     }
 
-    public String getTagBase64() {
-        return tagBase64;
-    }
 
     public String getIvBase64() {
         return ivBase64;
@@ -505,22 +501,26 @@ public class SafEncrypt {
 
             final String languageName = encryption.getSymmetricInteroperabilityLanguages().name();
             SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(languageName).symmetric().defaultAlgo());
-            if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
+
+            /**
+             * Extension for providing Tag Separately for AES_GCM
+             */
+            /*if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
                 throw new SafencryptException(encryption.errorConfig.message("SAF-030", languageName, symmetricAlgorithm.getLabel()));
-            }
+            }*/
 
             encryption.cipherTextBase64 = cipherText;
             return new InteroperableDecryptionBuilder(encryption);
         }
 
-        @SneakyThrows
-        public InteroperableDecryptionBuilder cipherTextAndTagBase64(String cipherText, String tag) {
+        /**
+         * Extension for providing Tag Separately for AES_GCM
+         */
+        /*@SneakyThrows
+        public InteroperableDecryptionBuilder cipherTextAndTagBase64(String cipherText) {
 
             if (StringUtils.isBlank(cipherText))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
-
-            if (StringUtils.isBlank(tag))
-                throw new SafencryptException(encryption.errorConfig.message("SAF-027"));
 
             final String languageName = encryption.getSymmetricInteroperabilityLanguages().name();
             SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(languageName).symmetric().defaultAlgo());
@@ -529,9 +529,8 @@ public class SafEncrypt {
             }
 
             encryption.cipherTextBase64 = cipherText;
-            encryption.tagBase64 = tag;
             return new InteroperableDecryptionBuilder(encryption);
-        }
+        }*/
     }
 
     public static class InteroperableDecryptionBuilder {

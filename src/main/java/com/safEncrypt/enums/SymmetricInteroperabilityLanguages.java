@@ -6,9 +6,10 @@ package com.safEncrypt.enums;
  */
 public enum SymmetricInteroperabilityLanguages {
 
+    Python,
     CSharp,
     DotNet,
-    Python;
+    Sample_JavaScript;
 
 }
 

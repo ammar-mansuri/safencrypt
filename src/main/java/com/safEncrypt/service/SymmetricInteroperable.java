@@ -68,18 +68,19 @@ public class SymmetricInteroperable {
 
         byte[] cipherBytes;
 
-        if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
-
+        /**
+         * Extension for providing Tag Separately for AES_GCM
+         */
+        /*if (symmetricAlgorithm.getLabel().startsWith("AES_GCM")) {
             byte[] ciphertextBytes = Base64Decoder.decodeBase64(symmetricBuilder.getCipherTextBase64());
             byte[] tagBytes = Base64Decoder.decodeBase64(symmetricBuilder.getTagBase64());
             cipherBytes = new byte[ciphertextBytes.length + tagBytes.length];
             System.arraycopy(ciphertextBytes, 0, cipherBytes, 0, ciphertextBytes.length);
             System.arraycopy(tagBytes, 0, cipherBytes, ciphertextBytes.length, tagBytes.length);
 
-        } else {
+        }*/
 
-            cipherBytes = Base64Decoder.decodeBase64(symmetricBuilder.getCipherTextBase64());
-        }
+        cipherBytes = Base64Decoder.decodeBase64(symmetricBuilder.getCipherTextBase64());
 
 
         return isGCM(symmetricAlgorithm) ?

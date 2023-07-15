@@ -3,9 +3,8 @@
     "Python": {
       "library-Provider": "Crypto",
       "symmetric": {
-        "default-algo": "AES_GCM_256_NoPadding",
-        "iv-bytes": 12,
-        "tag-bits": 96
+        "default-algo": "AES_CBC_256_PKCS7Padding",
+        "iv-bytes": 16
       }
     },
     "CSharp": {
@@ -13,6 +12,14 @@
       "symmetric": {
         "default-algo": "AES_CBC_128_PKCS7Padding",
         "iv-bytes": 16
+      }
+    },
+    "Sample_JavaScript": {
+      "library-Provider": "Microsoft",
+      "symmetric": {
+        "default-algo": "AES_GCM_256_NoPadding",
+        "iv-bytes": 12,
+        "tag-bits": 96
       }
     }
   }
