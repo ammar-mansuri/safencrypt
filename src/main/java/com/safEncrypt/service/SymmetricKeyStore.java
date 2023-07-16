@@ -28,9 +28,9 @@ public class SymmetricKeyStore {
     protected void saveKey(String alias, SecretKey secretKey) {
 
 
-        File keystoreFile = new File(keyStoreConfig.filePath());
+        final File keystoreFile = new File(keyStoreConfig.filePath());
 
-        KeyStore keyStore = KeyStore.getInstance(KEY_STORE_FORMAT);
+        final KeyStore keyStore = KeyStore.getInstance(KEY_STORE_FORMAT);
 
         if (!keystoreFile.exists()) {
             keyStore.load(null, keyStoreConfig.password().toCharArray());
@@ -39,8 +39,8 @@ public class SymmetricKeyStore {
         }
 
 
-        KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
-        KeyStore.PasswordProtection keyPasswordProtection = new KeyStore.PasswordProtection(keyStoreConfig.password().toCharArray());
+        final KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
+        final KeyStore.PasswordProtection keyPasswordProtection = new KeyStore.PasswordProtection(keyStoreConfig.password().toCharArray());
         keyStore.setEntry(alias, secretKeyEntry, keyPasswordProtection);
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(keystoreFile)) {
@@ -52,12 +52,12 @@ public class SymmetricKeyStore {
     @SneakyThrows
     public SecretKey loadKey(String alias) {
 
-        char[] password = keyStoreConfig.password().toCharArray();
-        KeyStore keyStore = KeyStore.getInstance(KEY_STORE_FORMAT);
+        final char[] password = keyStoreConfig.password().toCharArray();
+        final KeyStore keyStore = KeyStore.getInstance(KEY_STORE_FORMAT);
 
         try (FileInputStream fis = new FileInputStream(keyStoreConfig.filePath())) {
             keyStore.load(fis, password);
-            SecretKey secretKey = (SecretKey) keyStore.getKey(alias, password);
+            final SecretKey secretKey = (SecretKey) keyStore.getKey(alias, password);
 
             Objects.requireNonNull(secretKey);
 

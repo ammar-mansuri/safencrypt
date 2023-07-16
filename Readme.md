@@ -299,5 +299,13 @@ Example3: Generating the key yourself, and loading any key using the loadKey met
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
                         .decrypt();
-
 ```
+
+
+## FAQs
+
+There is a list of questions asked by users on StackOverflow pertaining to the usage of JCA. We will try to address them here in SafEncrypt's context.
+
+1. What happens if I do not  specify the IV although it is required?
+
+    IV are a source to create randomness in the ciphertext. Algorithms such as AES in ECB mode doesn’t necessarily require the user to enter IV, which is the reason its declared as insecure because the same plaintext and key will always lead to the same ciphertext. Safecrypt allows two variants of AES, one is CBC and the other one is GCM. IV is mandatory for both the variants, however users dont need to worry about its creation. SafEncrypt will create secure IV during the encryption preocess and return it back to the user in order to be used further for decryption purposes. 

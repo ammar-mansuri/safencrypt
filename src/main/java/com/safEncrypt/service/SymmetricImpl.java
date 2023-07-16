@@ -46,9 +46,9 @@ public class SymmetricImpl {
     @SneakyThrows
     public SymmetricCipher encrypt(SafEncrypt safEncrypt) {
 
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(safEncrypt.getSymmetricAlgorithm().getLabel());
+        final SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(safEncrypt.getSymmetricAlgorithm().getLabel());
 
-        SymmetricConfig.Constraints constraints = symmetricConfig.getConstraint(getAlgoForConstraints(symmetricAlgorithm));
+        final SymmetricConfig.Constraints constraints = symmetricConfig.getConstraint(getAlgoForConstraints(symmetricAlgorithm));
 
         SecretKey secretKey = safEncrypt.getKey();
 
@@ -71,8 +71,8 @@ public class SymmetricImpl {
      */
     @SneakyThrows
     public byte[] decrypt(SafEncrypt safEncrypt) {
-        SymmetricAlgorithm algorithm = safEncrypt.getSymmetricAlgorithm();
-        SymmetricConfig.Constraints constraints = symmetricConfig.getConstraint(getAlgoForConstraints(algorithm));
+        final SymmetricAlgorithm algorithm = safEncrypt.getSymmetricAlgorithm();
+        final SymmetricConfig.Constraints constraints = symmetricConfig.getConstraint(getAlgoForConstraints(algorithm));
 
         return isGCM(algorithm) ?
                 decryptWithGCM(constraints.tagSize(), constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText(), safEncrypt.getAssociatedData()) :
@@ -88,7 +88,7 @@ public class SymmetricImpl {
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
 
         Cipher cipher;
-        String algorithm = getAlgorithmForCipher(symmetricAlgorithm);
+        final String algorithm = getAlgorithmForCipher(symmetricAlgorithm);
         try {
             cipher = Cipher.getInstance(getAlgorithmForCipher(symmetricAlgorithm));
         } catch (NoSuchAlgorithmException e) {
@@ -151,7 +151,7 @@ public class SymmetricImpl {
         isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
 
         Cipher cipher;
-        String algorithm = getAlgorithmForCipher(symmetricAlgorithm);
+        final String algorithm = getAlgorithmForCipher(symmetricAlgorithm);
         try {
             cipher = Cipher.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
@@ -207,7 +207,7 @@ public class SymmetricImpl {
     protected void isKeyLengthCorrect(SecretKey secretKey, SymmetricAlgorithm symmetricAlgorithm) {
 
         final int keyLength = secretKey.getEncoded().length * 8;
-        HashSet<Integer> allowedKeyLength = new HashSet<>() {{
+        final HashSet<Integer> allowedKeyLength = new HashSet<>() {{
             add(128);
             add(192);
             add(256);

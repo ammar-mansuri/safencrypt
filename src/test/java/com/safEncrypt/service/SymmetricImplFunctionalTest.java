@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 
 class SymmetricImplFunctionalTest {
@@ -94,6 +95,9 @@ class SymmetricImplFunctionalTest {
                         .loadKey(key)
                         .plaintext(plainText)
                         .encrypt();
+
+        String aa = Base64.getEncoder().encodeToString(symmetricCipher.ciphertext());
+
 
         byte[] decryptedText =
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)

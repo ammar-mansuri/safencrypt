@@ -66,7 +66,7 @@ public class ConfigParser {
 
     @SneakyThrows
     private static byte[] getFile(String fileName) {
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        final InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
         try {
             if (stream == null) {
                 throw new SafencryptException("Unable to load Config file " + fileName);

@@ -26,7 +26,7 @@ public class SymmetricKeyGenerator {
     @SneakyThrows
     public static byte[] generateSymmetricKey(SymmetricAlgorithm symmetricAlgorithm) {
 
-        KeyGenerator kg = KeyGenerator.getInstance(Utility.getKeyAlgorithm(symmetricAlgorithm));
+        final KeyGenerator kg = KeyGenerator.getInstance(Utility.getKeyAlgorithm(symmetricAlgorithm));
         kg.init(Utility.getKeySize(symmetricAlgorithm));
         return kg.generateKey().getEncoded();
     }
@@ -40,15 +40,15 @@ public class SymmetricKeyGenerator {
     @SneakyThrows
     public static byte[] generateSymmetricKeyFromPassword(byte[] password, KeyAlgorithm keyAlgorithm, int keyLength) {
 
-        byte[] salts = new byte[pbeKeyConfig.saltLength()];
-        SecureRandom secureRandom = new SecureRandom();
+        final byte[] salts = new byte[pbeKeyConfig.saltLength()];
+        final SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salts);
 
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(keyAlgorithm.getLabel());
-        PBEKeySpec pbeKeySpec = new PBEKeySpec(new String(password, StandardCharsets.UTF_8).toCharArray(), salts, pbeKeyConfig.iterations(), keyLength);
-        SecretKey key = secretKeyFactory.generateSecret(pbeKeySpec);
+        final SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(keyAlgorithm.getLabel());
+        final PBEKeySpec pbeKeySpec = new PBEKeySpec(new String(password, StandardCharsets.UTF_8).toCharArray(), salts, pbeKeyConfig.iterations(), keyLength);
+        final SecretKey key = secretKeyFactory.generateSecret(pbeKeySpec);
         return key.getEncoded();
-        
+
     }
 
 }

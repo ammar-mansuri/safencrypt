@@ -14,7 +14,7 @@ SAF-013: "Provided Ciphertext is should be Padded or must be at-least 16 bytes o
 SAF-014: "Provided IV With Length [{0}] bytes is not compatible with selected algorithm [{1}], it should be of [{2}] bytes"
 SAF-015: "Unsecure Key! Key is initialized with all zeros"
 SAF-016: "Unable to find Interoperability Configuration for the selected language [{0}]"
-SAF-017: "Unable to find Constraints Mapping for the selected algorithm [{0}]"
+SAF-017: "Unable to find Constraints Mapping for the selected algorithm [{0}] in the configuration"
 SAF-018: "Key shouldn't be BLANK OR NULL"
 SAF-019: "Plaintext shouldn't be BLANK OR NULL"
 SAF-020: "Symmetric Algorithm shouldn't be NULL"

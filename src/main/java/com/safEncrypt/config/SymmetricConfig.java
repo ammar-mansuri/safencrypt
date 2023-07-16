@@ -15,7 +15,7 @@ public record SymmetricConfig(@JsonProperty("symmetric-algorithms") Set<String> 
         return constraints.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(key))
                 .map(Map.Entry::getValue)
                 .findFirst()
-                .orElseThrow(() -> new SafencryptException(MessageFormat.format("SAF-017 : Unable to find Constraints Mapping for the selected Algorithm [{0}]", key)));
+                .orElseThrow(() -> new SafencryptException(MessageFormat.format("SAF-017 : Unable to find Constraints Mapping for the selected Algorithm [{0}] in the configuration", key)));
     }
 
     public record Constraints(@JsonProperty("iv-bytes") Integer ivSize, @JsonProperty("tag-bits") Integer tagSize) {
