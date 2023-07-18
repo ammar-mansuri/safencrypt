@@ -2,11 +2,51 @@ package com.safEncrypt;
 
 
 import com.safEncrypt.builder.SafEncrypt;
+import com.safEncrypt.enums.SymmetricAlgorithm;
 import com.safEncrypt.enums.SymmetricInteroperabilityLanguages;
 import com.safEncrypt.models.SymmetricCipher;
 
+import java.io.*;
+
 public class Main {
     public static void main(String[] args) {
+
+        SymmetricCipher symmetricCipher;
+
+        try (InputStream inputStream = new FileInputStream("plaintext.txt")) {
+
+            try (OutputStream outputStream = new FileOutputStream("encrypted.txt")) {
+
+                symmetricCipher = SafEncrypt.symmetricEncryption()
+                        .generateKey()
+                        .streamingPlaintext(inputStream, outputStream)
+                        .encrypt();
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        try (InputStream inputStream = new FileInputStream("encrypted.txt")) {
+
+            try (OutputStream outputStream = new FileOutputStream("decrypted.txt")) {
+
+                SafEncrypt.symmetricDecryption()
+                        .key(symmetricCipher.key())
+                        .iv(symmetricCipher.iv())
+                        .streamingCipherText(inputStream, outputStream)
+                        .decrypt();
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
 
        /* SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)

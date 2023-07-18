@@ -5,13 +5,10 @@ import com.safEncrypt.enums.KeyAlgorithm;
 import com.safEncrypt.enums.SymmetricAlgorithm;
 import com.safEncrypt.enums.SymmetricInteroperabilityLanguages;
 import com.safEncrypt.mapper.ConfigParser;
-import com.safEncrypt.service.SymmetricInteroperable;
-import com.safEncrypt.service.SymmetricKeyGenerator;
+import com.safEncrypt.service.*;
 import com.safEncrypt.exceptions.SafencryptException;
 import com.safEncrypt.models.SymmetricCipher;
 import com.safEncrypt.models.SymmetricCipherBase64;
-import com.safEncrypt.service.SymmetricImpl;
-import com.safEncrypt.service.SymmetricKeyStore;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,6 +16,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
@@ -34,6 +33,12 @@ public class SafEncrypt {
     private byte[] cipherText;
     private byte[] iv;
 
+    private InputStream plainTextInputStream;
+    private OutputStream cipherTextOutputStream;
+    private InputStream cipherTextInputStream;
+    private OutputStream plainTextOutputStream;
+
+    private boolean isStreaming = false;
 
     /*  Interoperability START */
     private String keyAlias;
@@ -48,8 +53,8 @@ public class SafEncrypt {
 
     private static SafEncrypt encryption;
     private SymmetricImpl symmetricImpl;
+    private SymmetricStreamingImpl symmetricStreamingImpl;
     private SymmetricConfig symmetricConfig;
-    private PBEKeyConfig pbeKeySpec;
     private ErrorConfig errorConfig;
     private ConfigParser configParser = new ConfigParser();
 
@@ -57,8 +62,8 @@ public class SafEncrypt {
     private SafEncrypt() {
         this.symmetricConfig = configParser.getSymmetricConfig();
         this.errorConfig = configParser.getErrorConfig();
-        this.pbeKeySpec = configParser.getPbKeyConfig();
         this.symmetricImpl = new SymmetricImpl(symmetricConfig, errorConfig);
+        this.symmetricStreamingImpl = new SymmetricStreamingImpl(symmetricConfig, errorConfig);
 
         /*  Interoperability START */
         this.symmetricInteroperabilityConfig = configParser.getInteroperabilityConfig();
@@ -95,6 +100,21 @@ public class SafEncrypt {
         return iv;
     }
 
+    public InputStream getPlainTextInputStream() {
+        return plainTextInputStream;
+    }
+
+    public OutputStream getCipherTextOutputStream() {
+        return cipherTextOutputStream;
+    }
+
+    public InputStream getCipherTextInputStream() {
+        return cipherTextInputStream;
+    }
+
+    public OutputStream getPlainTextOutputStream() {
+        return plainTextOutputStream;
+    }
 
     /*  Interoperability START */
     public SymmetricInteroperabilityLanguages getSymmetricInteroperabilityLanguages() {
@@ -240,6 +260,33 @@ public class SafEncrypt {
             return new EncryptionBuilder(encryption);
         }
 
+        @SneakyThrows
+        public EncryptionBuilder streamingPlaintext(final InputStream plainTextInputStream, final OutputStream cipherTextOutputStream) {
+//            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
+//                throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
+
+            encryption.plainTextInputStream = plainTextInputStream;
+            encryption.cipherTextOutputStream = cipherTextOutputStream;
+            encryption.isStreaming = true;
+            return new EncryptionBuilder(encryption);
+        }
+
+        @SneakyThrows
+        public EncryptionBuilder streamingPlaintext(final InputStream plainTextInputStream, final OutputStream cipherTextOutputStream, byte[] associatedData) {
+//            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
+//                throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
+
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
+
+            if (!isGCM(encryption.symmetricAlgorithm))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
+            encryption.plainTextInputStream = plainTextInputStream;
+            encryption.cipherTextOutputStream = cipherTextOutputStream;
+            encryption.associatedData = associatedData;
+            encryption.isStreaming = true;
+            return new EncryptionBuilder(encryption);
+        }
     }
 
     public static class DecryptKeyBuilder {
@@ -309,6 +356,36 @@ public class SafEncrypt {
             return new DecryptionBuilder(encryption);
         }
 
+        @SneakyThrows
+        public DecryptionBuilder streamingCipherText(final InputStream cipherTextInputStream, final OutputStream plainTextOutputStream) {
+//            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
+//                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
+
+            encryption.cipherTextInputStream = cipherTextInputStream;
+            encryption.plainTextOutputStream = plainTextOutputStream;
+            encryption.isStreaming = true;
+            return new DecryptionBuilder(encryption);
+        }
+
+        @SneakyThrows
+        public DecryptionBuilder streamingCipherText(final InputStream cipherTextInputStream, final OutputStream plainTextOutputStream, byte[] associatedData) {
+
+//            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
+//                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
+
+            if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
+
+            if (!isGCM(encryption.symmetricAlgorithm))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
+
+            encryption.cipherTextInputStream = cipherTextInputStream;
+            encryption.plainTextOutputStream = plainTextOutputStream;
+            encryption.associatedData = associatedData;
+            encryption.isStreaming = true;
+            return new DecryptionBuilder(encryption);
+        }
+
     }
 
     public static class EncryptionBuilder {
@@ -322,7 +399,9 @@ public class SafEncrypt {
         public SymmetricCipher encrypt() {
 
             try {
-                return encryption.symmetricImpl.encrypt(encryption);
+                return encryption.isStreaming == true ?
+                        encryption.symmetricStreamingImpl.encrypt(encryption) :
+                        encryption.symmetricImpl.encrypt(encryption);
             } catch (Exception e) {
 
                 if (e instanceof SafencryptException) {
@@ -357,7 +436,9 @@ public class SafEncrypt {
             if (encryption.associatedData != null && !isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
             try {
-                return encryption.symmetricImpl.decrypt(encryption);
+                return encryption.isStreaming == true ?
+                        encryption.symmetricStreamingImpl.decrypt(encryption) :
+                        encryption.symmetricImpl.decrypt(encryption);
             } catch (Exception e) {
                 if (e instanceof SafencryptException) {
                     throw e;
