@@ -5,47 +5,21 @@ import com.safEncrypt.builder.SafEncrypt;
 import com.safEncrypt.enums.SymmetricAlgorithm;
 import com.safEncrypt.enums.SymmetricInteroperabilityLanguages;
 import com.safEncrypt.models.SymmetricCipher;
+import com.safEncrypt.models.SymmetricStreamingCipher;
 
 import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
+        SymmetricStreamingCipher symmetricStreamingCipher = SafEncrypt.symmetricEncryption()
+                .generateKey()
+                .streamingPlaintext(new File("plaintext.txt"), new File("encrypted.txt")).encrypt();
 
-        SymmetricCipher symmetricCipher;
-
-        try (InputStream inputStream = new FileInputStream("plaintext.txt")) {
-
-            try (OutputStream outputStream = new FileOutputStream("encrypted.txt")) {
-
-                symmetricCipher = SafEncrypt.symmetricEncryption()
-                        .generateKey()
-                        .streamingPlaintext(inputStream, outputStream)
-                        .encrypt();
-            }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        try (InputStream inputStream = new FileInputStream("encrypted.txt")) {
-
-            try (OutputStream outputStream = new FileOutputStream("decrypted.txt")) {
-
-                SafEncrypt.symmetricDecryption()
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .streamingCipherText(inputStream, outputStream)
-                        .decrypt();
-            }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        SafEncrypt.symmetricDecryption()
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .streamingCipherText(new File("encrypted.txt"), new File("decrypted.txt"))
+                .decrypt();
 
 
 
