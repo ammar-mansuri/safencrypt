@@ -44,4 +44,6 @@ mvnw.cmd
 /dependency-reduced-pom.xml
 
 # Streaming Test Files
-/*.txt
+/src/test/resources/streamingSamples/output/dummy_image_dec.png
+/src/test/resources/streamingSamples/output/plainTextDecFile.txt
+/src/test/resources/streamingSamples/output/plainTextEncFile.txt
