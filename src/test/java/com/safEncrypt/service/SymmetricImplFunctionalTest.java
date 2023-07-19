@@ -4,15 +4,19 @@ import com.safEncrypt.builder.SafEncrypt;
 import com.safEncrypt.enums.KeyAlgorithm;
 import com.safEncrypt.enums.SymmetricAlgorithm;
 import com.safEncrypt.models.SymmetricCipher;
+import com.safEncrypt.models.SymmetricStreamingCipher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
 
 class SymmetricImplFunctionalTest {
+
+    private static final String resources_path = "src/test/resources/streamingSamples/";
 
     @Test
     void testSymmetricEncryptionUsingAllDefaults1() {
@@ -289,5 +293,43 @@ class SymmetricImplFunctionalTest {
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
     }
+
+
+    @Test
+    void testSymmetricStreamingEncryptionTextFileUsingAllDefaults1() {
+
+
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption()
+                        .generateKey()
+                        .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption()
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/plainTextEncFile.txt"), new File(resources_path + "output/plainTextDecFile.txt"))
+                .decrypt();
+    }
+
+    @Test
+    void testSymmetricStreamingEncryptionTextFileUsingCBC() {
+
+
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
+                        .generateKey()
+                        .plainFileStream(new File(resources_path + "input/dummy_image.png"), new File(resources_path + "output/plainTextEncFile.txt"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/plainTextEncFile.txt"), new File(resources_path + "output/dummy_image_dec.png"))
+                .decrypt();
+    }
+
 
 }
