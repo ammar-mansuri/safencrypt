@@ -5,18 +5,16 @@ import com.safEncrypt.config.ErrorConfig;
 import com.safEncrypt.config.SymmetricConfig;
 import com.safEncrypt.enums.SymmetricAlgorithm;
 import com.safEncrypt.exceptions.SafencryptException;
-import com.safEncrypt.models.SymmetricCipher;
+import com.safEncrypt.models.SymmetricStreamingCipher;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.AEADBadTagException;
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
@@ -26,12 +24,12 @@ import java.util.HashSet;
 import static com.safEncrypt.utils.Utility.*;
 
 @Slf4j
-public class SymmetricImpl {
+public class SymmetricStreamingImpl {
 
     private final SymmetricConfig symmetricConfig;
     private final ErrorConfig errorConfig;
 
-    public SymmetricImpl(SymmetricConfig symmetricConfig, ErrorConfig errorConfig) {
+    public SymmetricStreamingImpl(SymmetricConfig symmetricConfig, ErrorConfig errorConfig) {
         this.symmetricConfig = symmetricConfig;
         this.errorConfig = errorConfig;
     }
@@ -44,7 +42,7 @@ public class SymmetricImpl {
      * @return
      */
     @SneakyThrows
-    public SymmetricCipher encrypt(SafEncrypt safEncrypt) {
+    public SymmetricStreamingCipher encrypt(SafEncrypt safEncrypt) {
 
         final SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(safEncrypt.getSymmetricAlgorithm().getLabel());
 
@@ -57,10 +55,10 @@ public class SymmetricImpl {
         }
 
         if (isGCM(symmetricAlgorithm)) {
-            return encryptWithGCM(constraints.tagSize(), constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainText(), safEncrypt.getAssociatedData());
+            return encryptWithGCM(constraints.tagSize(), constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainFile(), safEncrypt.getCipherFile(), safEncrypt.getAssociatedData());
         }
 
-        return encrypt(constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainText());
+        return encrypt(constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), secretKey, safEncrypt.getPlainFile(), safEncrypt.getCipherFile());
     }
 
     /**
@@ -70,29 +68,89 @@ public class SymmetricImpl {
      * @return
      */
     @SneakyThrows
-    public byte[] decrypt(SafEncrypt safEncrypt) {
+    public void decrypt(SafEncrypt safEncrypt) {
         final SymmetricAlgorithm algorithm = safEncrypt.getSymmetricAlgorithm();
         final SymmetricConfig.Constraints constraints = symmetricConfig.getConstraint(getAlgoForConstraints(algorithm));
-
-        return isGCM(algorithm) ?
-                decryptWithGCM(constraints.tagSize(), constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText(), safEncrypt.getAssociatedData()) :
-                decrypt(constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherText());
-
+        if (isGCM(algorithm)) {
+            decryptWithGCM(constraints.tagSize(), constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherFile(), safEncrypt.getPlainFile(), safEncrypt.getAssociatedData());
+        } else {
+            decrypt(constraints.ivSize(), safEncrypt.getSymmetricAlgorithm(), safEncrypt.getKey(), safEncrypt.getIv(), safEncrypt.getCipherFile(), safEncrypt.getPlainFile());
+        }
     }
 
 
     @SneakyThrows
-    protected SymmetricCipher encrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] plaintext) {
+    protected SymmetricStreamingCipher encrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, final File inputFile, final File outputFile) {
         log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
+
         final Cipher cipher = cbcCipherHelper(symmetricAlgorithm);
         final IvParameterSpec ivSpec = generateIv(ivSize);
         isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
-        final byte[] ciphertext = cipher.doFinal(plaintext);
+        streamingCipherHelper(inputFile, outputFile, cipher);
+        return new SymmetricStreamingCipher(ivSpec.getIV(), secretKey.getEncoded(), SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
+    }
 
-        return new SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
+
+    @SneakyThrows
+    protected SymmetricStreamingCipher encryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, final File inputFile, final File outputFile, byte[] associatedData) {
+        isAlgorithmSecure(symmetricAlgorithm.getLabel());
+        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
+
+        final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
+
+        final IvParameterSpec ivSpec = generateIv(ivSize);
+        isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, ivSpec.getIV()));
+
+        if (associatedData != null && associatedData.length > 0) {
+            cipher.updateAAD(associatedData);
+        }
+        streamingCipherHelper(inputFile, outputFile, cipher);
+        return new SymmetricStreamingCipher(ivSpec.getIV(), secretKey.getEncoded(), SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
+    }
+
+
+    @SneakyThrows
+    protected void decrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, final File inputFile, final File outputFile) {
+        log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
+        isAlgorithmSecure(symmetricAlgorithm.getLabel());
+        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
+        isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
+        final Cipher cipher = cbcCipherHelper(symmetricAlgorithm);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
+        streamingCipherHelper(inputFile, outputFile, cipher);
+
+    }
+
+    protected void decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, final File inputFile, final File outputFile, byte[] associatedData) throws Exception {
+        isAlgorithmSecure(symmetricAlgorithm.getLabel());
+        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
+        isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
+        final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, iv));
+        if (associatedData != null && associatedData.length > 0) cipher.updateAAD(associatedData);
+        streamingCipherHelper(inputFile, outputFile, cipher);
+    }
+
+    private void streamingCipherHelper(File inputFile, File outputFile, Cipher cipher) throws SafencryptException {
+        try (InputStream inputStream = new FileInputStream(inputFile)) {
+            try (OutputStream outputStream = new FileOutputStream(outputFile)) {
+                try (CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = cipherInputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new SafencryptException(e);
+        } catch (IOException e) {
+            throw new SafencryptException(e);
+        }
     }
 
     protected Cipher cbcCipherHelper(SymmetricAlgorithm symmetricAlgorithm) throws NoSuchPaddingException, SafencryptException {
@@ -115,26 +173,6 @@ public class SymmetricImpl {
         }
     }
 
-
-    @SneakyThrows
-    protected SymmetricCipher encryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] plaintext, byte[] associatedData) {
-        isAlgorithmSecure(symmetricAlgorithm.getLabel());
-        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
-
-        final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
-
-        final IvParameterSpec ivSpec = generateIv(ivSize);
-        isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, ivSpec.getIV()));
-
-        if (associatedData != null && associatedData.length > 0) {
-            cipher.updateAAD(associatedData);
-        }
-
-        final byte[] ciphertext = cipher.doFinal(plaintext);
-        return new SymmetricCipher(ivSpec.getIV(), secretKey.getEncoded(), ciphertext, SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
-    }
-
     protected Cipher gcmCipherHelper(SymmetricAlgorithm symmetricAlgorithm) throws SafencryptException {
         try {
             return Cipher.getInstance(getAlgorithmForCipher(symmetricAlgorithm));
@@ -145,36 +183,6 @@ public class SymmetricImpl {
             throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
         }
     }
-
-
-    @SneakyThrows
-    protected byte[] decrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText) {
-        log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
-        isAlgorithmSecure(symmetricAlgorithm.getLabel());
-        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
-        isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
-
-        final Cipher cipher = cbcCipherHelper(symmetricAlgorithm);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
-        return cipher.doFinal(cipherText);
-    }
-
-    protected byte[] decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText, byte[] associatedData) throws Exception {
-        isAlgorithmSecure(symmetricAlgorithm.getLabel());
-        isKeyLengthCorrect(secretKey, symmetricAlgorithm);
-        isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
-
-        final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
-
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, iv));
-        if (associatedData != null && associatedData.length > 0) cipher.updateAAD(associatedData);
-        try {
-            return cipher.doFinal(cipherText);
-        } catch (AEADBadTagException e) {
-            throw new SafencryptException(errorConfig.message("SAF-002", e));
-        }
-    }
-
 
     @SneakyThrows
     protected void isAlgorithmSecure(String symmetricAlgorithm) {
