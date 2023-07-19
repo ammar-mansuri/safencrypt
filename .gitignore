@@ -42,3 +42,6 @@ mvnw.cmd
 # Spring Boot
 /src/~$Common_Exceptions.xlsx
 /dependency-reduced-pom.xml
+
+# Streaming Test Files
+/*.txt

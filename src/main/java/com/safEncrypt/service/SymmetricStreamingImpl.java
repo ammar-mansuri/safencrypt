@@ -101,9 +101,9 @@ public class SymmetricStreamingImpl {
                 cipherInputStream.close();
             }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         }
         return new SymmetricStreamingCipher(ivSpec.getIV(), secretKey.getEncoded(), SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
     }
@@ -154,9 +154,9 @@ public class SymmetricStreamingImpl {
                 cipherInputStream.close();
             }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         }
         return new SymmetricStreamingCipher(ivSpec.getIV(), secretKey.getEncoded(), SymmetricAlgorithm.fromLabel(symmetricAlgorithm.getLabel()));
     }
@@ -192,9 +192,9 @@ public class SymmetricStreamingImpl {
                 }
             }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         }
 
     }
@@ -217,9 +217,9 @@ public class SymmetricStreamingImpl {
                 }
             }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SafencryptException(e);
         }
     }
 

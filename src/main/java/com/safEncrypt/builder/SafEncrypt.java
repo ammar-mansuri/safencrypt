@@ -18,10 +18,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import static com.safEncrypt.utils.Utility.getKeySize;
 import static com.safEncrypt.utils.Utility.isGCM;
@@ -251,27 +250,27 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public StreamingEncryptionBuilder streamingPlaintext(final File plainTextFile, final File cipherTextFile) {
-//            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
-//                throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
+        public StreamingEncryptionBuilder plainFileStream(final File plainFile, final File cipherFile) {
+            if (Objects.isNull(plainFile))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-032"));
 
-            encryption.plainFile = plainTextFile;
-            encryption.cipherFile = cipherTextFile;
+            encryption.plainFile = plainFile;
+            encryption.cipherFile = cipherFile;
             return new StreamingEncryptionBuilder(encryption);
         }
 
         @SneakyThrows
-        public StreamingEncryptionBuilder streamingPlaintext(final File plainTextFile, final File cipherTextFile, byte[] associatedData) {
-//            if (plaintext == null || StringUtils.isBlank(new String(plaintext, StandardCharsets.UTF_8)))
-//                throw new SafencryptException(encryption.errorConfig.message("SAF-019"));
+        public StreamingEncryptionBuilder plainFileStream(final File plainFile, final File cipherFile, byte[] associatedData) {
+            if (Objects.isNull(plainFile))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-032"));
 
             if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
 
             if (!isGCM(encryption.symmetricAlgorithm))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-005"));
-            encryption.plainFile = plainTextFile;
-            encryption.cipherFile = cipherTextFile;
+            encryption.plainFile = plainFile;
+            encryption.cipherFile = cipherFile;
             encryption.associatedData = associatedData;
             return new StreamingEncryptionBuilder(encryption);
         }
@@ -345,20 +344,20 @@ public class SafEncrypt {
         }
 
         @SneakyThrows
-        public StreamingDecryptionBuilder streamingCipherText(final File cipherTextFile, final File plainTextFile) {
-//            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
-//                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
+        public StreamingDecryptionBuilder cipherFileStream(final File cipherFile, final File plainFile) {
+            if (Objects.isNull(cipherFile))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-033"));
 
-            encryption.cipherFile = cipherTextFile;
-            encryption.plainFile = plainTextFile;
+            encryption.cipherFile = cipherFile;
+            encryption.plainFile = plainFile;
             return new StreamingDecryptionBuilder(encryption);
         }
 
         @SneakyThrows
-        public StreamingDecryptionBuilder streamingCipherText(final File cipherFile, final File plainFile, byte[] associatedData) {
+        public StreamingDecryptionBuilder cipherFileStream(final File cipherFile, final File plainFile, byte[] associatedData) {
 
-//            if (cipherText == null || StringUtils.isBlank(new String(cipherText, StandardCharsets.UTF_8)))
-//                throw new SafencryptException(encryption.errorConfig.message("SAF-023"));
+            if (Objects.isNull(cipherFile))
+                throw new SafencryptException(encryption.errorConfig.message("SAF-033"));
 
             if (associatedData == null || StringUtils.isBlank(new String(associatedData, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-026"));
