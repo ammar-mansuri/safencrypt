@@ -47,3 +47,5 @@ mvnw.cmd
 /src/test/resources/streamingSamples/output/dummy_image_dec.png
 /src/test/resources/streamingSamples/output/plainTextDecFile.txt
 /src/test/resources/streamingSamples/output/plainTextEncFile.txt
+/src/test/resources/streamingSamples/output/plainTextEncFile.png
+/src/test/resources/streamingSamples/output/cipherImage.png

@@ -320,14 +320,32 @@ class SymmetricImplFunctionalTest {
         SymmetricStreamingCipher symmetricStreamingCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
                         .generateKey()
-                        .plainFileStream(new File(resources_path + "input/dummy_image.png"), new File(resources_path + "output/plainTextEncFile.txt"))
+                        .plainFileStream(new File(resources_path + "input/dummy_image.png"), new File(resources_path + "output/cipherImage.png"))
                         .encrypt();
 
 
         SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
                 .key(symmetricStreamingCipher.key())
                 .iv(symmetricStreamingCipher.iv())
-                .cipherFileStream(new File(resources_path + "output/plainTextEncFile.txt"), new File(resources_path + "output/dummy_image_dec.png"))
+                .cipherFileStream(new File(resources_path + "output/cipherImage.png"), new File(resources_path + "output/dummy_image_dec.png"))
+                .decrypt();
+    }
+
+    @Test
+    void testSymmetricStreamingEncryptionTextFileUsingPBKEY() {
+
+
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .generateKeyFromPassword("filePassword".getBytes())
+                        .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/plainTextEncFile.txt"), new File(resources_path + "output/plainTextDecFile.txt"))
                 .decrypt();
     }
 
