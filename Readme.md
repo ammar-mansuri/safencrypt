@@ -301,11 +301,310 @@ Example3: Generating the key yourself, and loading any key using the loadKey met
                         .decrypt();
 ```
 
+## Usage Examples [Streaming Symmetric Encryption/Decryption]
+
+1. You want to encrypt/decrypt the data in FILE using the Safe Defaults from the library?
+
+```java
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption()
+                        .generateKey()
+                        .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/cipherTextFile.txt"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption()
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/cipherTextFile.txt"), new File(resources_path + "output/plainTextDecFile.txt"))
+                .decrypt();
+```
+
+2. You want to encrypt/decrypt an image in FILE using the AES_CBC algorithm?
+
+```java
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
+                        .generateKey()
+                        .plainFileStream(new File(resources_path + "input/dummy_image.png"), new File(resources_path + "output/cipherImage.png"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/cipherImage.png"), new File(resources_path + "output/dummy_image_dec.png"))
+                .decrypt();
+```
+
+
+3. You want to encrypt/decrypt the data in FILE using Password Based Key Generation ?
+
+```java
+        SymmetricStreamingCipher symmetricStreamingCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                        .generateKeyFromPassword("filePassword".getBytes())
+                        .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
+                        .encrypt();
+
+
+        SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                .key(symmetricStreamingCipher.key())
+                .iv(symmetricStreamingCipher.iv())
+                .cipherFileStream(new File(resources_path + "output/plainTextEncFile.txt"), new File(resources_path + "output/plainTextDecFile.txt"))
+                .decrypt();
+```
+
+
+## Interoperability
+
+1. You want to do encryption, and then decrypt it later in Python ?
+
+```java
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Python)
+                .plaintext(plainText)
+                .encrypt();
+
+```
+
+2. You want to do encryption, and then decrypt it later in C# ?
+
+```java
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.CSharp)
+                .plaintext(plainText)
+                .encrypt();
+```
+
+3. You want to do encryption, and then decrypt it later in JavaScript ?
+
+```java
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Sample_JavaScript)
+                .plaintext(plainText)
+                .optionalAssociatedData(associatedData)
+                .encrypt();
+```
+            
+
+
 
 ## FAQs
 
-There is a list of questions asked by users on StackOverflow pertaining to the usage of JCA. We will try to address them here in SafEncrypt's context.
+There are a number of questions asked by users on StackOverflow pertaining to the usage of JCA. We will try to address them here in SafEncrypt's context.
 
-1. What happens if I do not  specify the IV although it is required?
+1. What happens if I do not  specify the IV although it is required?	
+
 
     IV are a source to create randomness in the ciphertext. Algorithms such as AES in ECB mode doesn’t necessarily require the user to enter IV, which is the reason its declared as insecure because the same plaintext and key will always lead to the same ciphertext. Safecrypt allows two variants of AES, one is CBC and the other one is GCM. IV is mandatory for both the variants, however users dont need to worry about its creation. SafEncrypt will create secure IV during the encryption preocess and return it back to the user in order to be used further for decryption purposes. 
+    
+2. How can I derive a key from a password?
+
+
+    In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+
+3. What is the default value if I do not specify padding?
+
+
+    In SafEncrypt AES_CBC supports (PKCS5 and PKCS7) and AES_GCM (NoPadding). The default algorithm is AES_GCM_128_NoPadding, where 128 is the key size. 
+
+4. What kind of parameters do I have to pass to the decryption methods (update / doFinal)?	
+
+
+    Using SafEncrypt you don’t have to worry about calling the update and final methods. The SafEncrypt builder will simply prompt to ask whats required for decryption (such as key, iv, ciphertext ..)
+
+5. Which of the provided key derivation functions are standardized?	
+
+
+    Besides the usual Key Generation from a secure random source, SafEncrypt supports Password based key derivation with two variants PBKDF2WithHmacSHA256 and PBKDF2WithHmacSHA512 [default]. 
+
+6. Are there any external dependencies for the implementation of AES-256?	
+
+
+    There are no external dependencies when using SafEncrypt. 
+
+7. What parameters does a Cipher object require for initialization?	
+
+
+    When using SafEncrypt you don’t have to worrry about initialization, parameters.  The SafEncrypt builder will simply prompt to ask whats required for encryption/decryption. 
+
+8. When do I have to call update(), when do I have to call doFinal()?	
+
+
+    When using SafEncrypt you don’t have to worrry about calling the update and doFinal methods.  The SafEncrypt builder will simply prompt to ask whats required for encryption/decryption and return the necessary data. 
+
+9. Are Cipher objects thread safe?	
+
+
+    Cipher objects are not threas safe, and its recommended to generate a new instance each time. SafEncrypt internally handles this is a safe and secure manner, therefore the users don’t need to worry about it. 
+
+10. How to specify PKCS#7 padding in Java?	
+
+
+    Using SafEncrypt, while encrption and decryption you can simply specify the algorithm as an Enum from the SymmetricAlgorithm class as a paramater. 
+
+11. How to specify SecretKeySpec correctly?	
+
+
+    You can simply use the SafEncrypt methods such as "SymmetricKeyGenerator.generateSymmetricKey()" to generate key securely or use the SafEncrypt builder method generateKey(). Besides, if you want to use SecretKeySpec you can simply use like below. 
+    
+    final SecretKeySpec secretKey = new SecretKeySpec("key".getBytes(), "AES");
+    
+
+12. How to correctly specify key derivation using PBKDF2?
+
+
+    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+
+13. How can I securely store a key after encryption?	
+
+
+    There are multiple solutions to storing the key after encryption, such as using key management systems, or storing securely in a file systems etc. 
+
+14. How can I restore the key for decryption?
+
+
+    When using SafEncrypt, the builder will return all the required details for decryption such as (key, iv, cipherText ..) in an SymmetricCipher object after encryption process. 
+
+15. What schemes are supported by platform X?
+
+
+    SafEncrypt currently support Symmetric Encryption in CBC and GCM modes of operation inclusing key generation/derivation. 
+
+16. What key derivation functions are available for platform X?
+
+
+    SafEncrypt supports Key Generation from a secure random source for AES. Moreover, password based key derivation with two variants PBKDF2WithHmacSHA256 and PBKDF2WithHmacSHA512 [default] are also supported. 
+
+17. What size is the authentication tag generated by AES-GCM encryption?	
+
+
+    The default configuration for AES-GCM in SafEncrypt generates a tag size of 96 bits (12 bytes).
+
+18. How do I specify my Cipher object to use DESede?
+
+
+    SafEncrypt doesn’t support unsecure encryption scheme such as DES. 
+
+19. How can I specify DESede with only 2 keys ( = 16B)?
+
+
+    SafEncrypt doesn’t support unsecure encryption scheme such as DES. 
+
+20. What kind of parameters does a Cipher object require for encryption?	
+
+
+    When using SafEncrypt you don’t have to worrry about interaction with Cipher object. The SafEncrypt builder will simply prompt to ask whats required for encryption/decryption. 
+
+21. How can I derive the key for decryption in the same way as for encryption?	
+
+
+    You have to save the key returned in an SymmetricCipher object when encrypting using SafEncrypt. There's no way to derive the same key again that was used for encryption.  
+
+22. How can I store or transmit the IV?	
+
+
+    You can store the IV in the same place as the ciphertext. IV's iteself aren't secret but its just that they shouldn't be re-used to avoid prediction of plaintext. 
+
+23. What are the default values for platform X?	
+
+
+    The default algorithm for encryption/decryption in SafEncrypt is AES_GCM_128_NoPadding. The default for secure symmetric key generation is 16 bytes AES key. The default for password based key generation is PBKDF2WithHmacSHA512. 
+
+24. How can I encrypt large amount of data?	
+
+
+    If your large amount lf data is present inside a file, you can use SafEncrypt streaming encryption to easily encrypt/decrypt data. 
+
+25. How is password based encryption implemented in JCA?
+
+
+    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+
+26. What size is the output generated by AES-GCM encryption?
+
+
+    As the AES-GCM uses NoPadding, the resultant size of the ciphertext is [The size of plaintext + TagSize]. Default Tag Size for AES-GCM is 96 bits (12 bytes) in SafEncrypt. 
+
+27. What is the difference between TripleDES and DESede?
+
+
+    SafEncrypt doesn’t support unsecure encryption scheme such as DES. 
+    
+28. What is the default value if I do not specify the encryption mode?	
+
+    
+    SafEncrpyt promotes the usage of algorithms in a safe manner. You can use AES either in CBC or in GCM mode. 
+
+29. How can I generate a random key?
+
+
+    SafEncrypt supports Key Generation from a secure random source for AES. You can simply use the SafEncrypt methods such as "SymmetricKeyGenerator.generateSymmetricKey()" to generate key securely. Optionally you can also specify the algorithm from the SymmetricAlgorithm class as a paramater for which you want to use the key. If you are using the SafEncrypt builder method generateKey(), it will automatically generate the key as per the respective encryption algorithm selected for encryption.
+
+30. How can I specify PBEKeySpec correctly?	
+
+
+    When using SafEncrypt you don’t have to worrry about interacting with PBEKeySpec directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+
+31. How can I specify DESedeKeySpec correctly?	
+
+
+    SafEncrypt doesn’t support unsecure encryption scheme such as DES. 
+
+32. How can I generate an IV?	
+
+
+    When using SafEncrypt you don’t have to worrry about IV generation. SafEncrypt generate a secure random IV itself as per the algorithm requirements. SafEncrypt builder will return all the required details for decryption such as (key, iv, cipherText ..) in an SymmetricCipher object after encryption process. 
+
+33. How can I properly set up a Cipher object and ask it for encryption?	
+
+
+    When using SafEncrypt you don’t have to worrry about interaction with Cipher object. The SafEncrypt builder simply prompts to ask from the user whats required for encryption/decryption. 
+
+34. How can I encrypt several items in a row?
+
+
+    Convert each item in byte array representation ( byte[] ) and use SafEncryt builder to encrypt each of them. 
+
+35. What is the data type of a key?	
+
+
+    The data type for key is byte[] when using SafEncrypt. 
+
+36. Is the IV appended to cipher text after encryption?	
+
+
+    No, SafEncrypt doesn’t append the Ciphertext and IV together after encryption. SafEncrypt builder will return all the required details separately for decryption such as (key, iv, cipherText ..) in an SymmetricCipher object after encryption process. 
+
+37. How is the authentication data concatenated to cipher text after encryption?	
+
+
+    Authentication Data (Authentication Tag) is a fixed size data generated during encryption and appended to the end of the ciphertext. It’s basically the hash of plaintext and the associated data (optional) that is used for integrity and authentication purposes at the time of decryption. The resultant size of the ciphertext in AES_GCM is [The size of plaintext + TagSize]. Default Tag Size for AES-GCM is 96 bits (12 bytes) in SafEncrypt. 
+
+38. What is the output of update()?	
+
+
+    The update() method is used for streaming encryption and the output depends on the AES mode of operation. For e.g. AES-CBC will return the ecnrypted/decrypted text when calling the update() method, while AES-GCM doesn’t return anything. Streaming encryption is supported in SafEncrypt. 
+
+39. Can I speed up Cipher.getInstance()?
+
+
+    While using SafEncrypt, there's no need to interact directly with the Cipher object. 
+
+40. What classes for AlgorithmParameterSpec should be used on platform X?	
+
+
+    While using SafEncrypt, there's no need to interact directly with the AlgorithmParameterSpec. Use the SafEncrypt builder to encrypt/decrypt the data and it will handle everything required for you in cases of AES-CBC and AES-GCM. 
+
+41. How can I test encryption?	
+
+
+    In order to test encryption, you can first use SafEncrypt builder to encrypted some plaintext. Secondly, you can use the SafEncrypt builder to decrypted the ciphertext providing the key and iv returned after encryption process. And finally compare the decrypted result and the orignal plaintext if they match. 
+
+42. What does "BadPaddingException: unknown block type" mean?
+
+
+    This exception can possibly occur during decryption due to tampered ciphertext. 
+
+43. How can I specify a Cipher object such that it does not apply padding?
+
+
+    Using SafEncrpyt you can use AES-CBC with PKCS5 or PKCS7 padding, while AES-GCM uses NoPadding. AES-CBC requires the plaintext to be multiple of 16 bytes so its mandatory to apply padding if it doesn’t meet the AES block size requirement.   
