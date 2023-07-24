@@ -15,7 +15,7 @@
       }
     },
     "Sample_JavaScript": {
-      "library-Provider": "Microsoft",
+      "library-Provider": "New Library",
       "symmetric": {
         "default-algo": "AES_GCM_256_NoPadding",
         "iv-bytes": 12,

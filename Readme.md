@@ -82,6 +82,7 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 ```
 
 5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
+
 ## IMPORTANT: Encoding/Decoding
 
 In order to make sure you have seamless experience while encryption and decryption it is very IMPORTANT to make sure the encoding and decoding is done correctly. It should be done everytime you convert from String to bytes[] and vice versa. 
@@ -104,6 +105,98 @@ OR (As the default encoding in java is UTF-8)
 ```java
     new String(plainTextBytes[] , StandardCharsets.UTF_8);
 ```
+
+
+## Configurations
+
+SafEncrypt is developed configurable, the provides the user ease of Safe Defaults using Safe Defaults.
+
+1. Password Based Key Generation [Symmetric_PBEKEY_Config.json]
+
+```java
+{
+  "algorithms": [
+    "PBKDF2WithHmacSHA256",
+    "PBKDF2WithHmacSHA512"
+  ],
+  "salt-bytes": 64,
+  "iterations": 1024
+}
+```
+
+This file contains the list of algorithms currently supported by SafEncrypt and their associated attributes for Password Based Key Generation. SafEncrypt will use these values by DEFAULT. 
+
+2. Symmetric Encryption [Symmetric_Algorithms_Config.json]
+
+```java
+{
+  "symmetric-algorithms": [
+    "AES_CBC_128_PKCS5Padding",
+    "AES_CBC_192_PKCS5Padding",
+    "AES_CBC_256_PKCS5Padding",
+    "AES_CBC_128_PKCS7Padding",
+    "AES_CBC_192_PKCS7Padding",
+    "AES_CBC_256_PKCS7Padding",
+    "AES_GCM_128_NoPadding",
+    "AES_GCM_192_NoPadding",
+    "AES_GCM_256_NoPadding"
+  ],
+  "constraints": {
+    "AES_CBC": {
+      "iv-bytes": 16
+    },
+    "AES_GCM": {
+      "iv-bytes": 12,
+      "tag-bits": 96
+    }
+  }
+}
+```
+
+This file contains the list of algorithms currently supported by SafEncrypt and their associated constraints for Symmetric Encryption. SafEncrypt will use these values by DEFAULT. The algorithms defined here works in conjunction with the ENUMS in SymmetricAlgorithm class. Any new ENUM for algorithm added in SymmetricAlgorithm class has to be whitelist here in the configuration file as well. 
+
+3. Interoperable Symmetric Encryption [Symmetric_Interoperability_Config.json]
+
+```java
+{
+  "interoperable-languages": {
+    "Python": {
+      "library-Provider": "Crypto",
+      "symmetric": {
+        "default-algo": "AES_CBC_256_PKCS7Padding",
+        "iv-bytes": 16
+      }
+    },
+    "CSharp": {
+      "library-Provider": "Microsoft",
+      "symmetric": {
+        "default-algo": "AES_CBC_128_PKCS7Padding",
+        "iv-bytes": 16
+      }
+    },
+    "Sample_JavaScript": {
+      "library-Provider": "New Library",
+      "symmetric": {
+        "default-algo": "AES_GCM_256_NoPadding",
+        "iv-bytes": 12,
+        "tag-bits": 96
+      }
+    }
+  }
+}
+```
+
+This file contains the list of algorithms currently supported by SafEncrypt w.r.t. Interoperability, and their associated constraints for Interoperable Symmetric Encryption. SafEncrypt will use the values associated for each language from this config class when performing Interoperable Symmetric Encryption. Any new Language added here must also be defined as an ENUM in SymmetricInteroperabilityLanguages class. 
+
+4. Interoperable Symmetric Encryption Keystore [Symmetric_Keystore_Config.json]
+
+```java
+{
+  "filePath": "keystore.jceks",
+  "password": "changeit"
+}
+```
+This file contains the kyestore configuration that is used for Interoperable Symmetric Encryption. filePath is the path where the user want to have the keystore created OR the path where the keystore exists. Password is the keystore password and well as each of the entry is keystore is protexted with this password. When doing Interoperable Symmetric Encryption, SafEncrypt will save the keys in this keystore and return the key alias to the user which will be required to fetch the key in future during decryption process in another language. 
 ## Usage Examples [Symmetric Key Generation]
 
 1. You want to geneate a symmetric key using the library defaults? The default algorithm generates a 128 bit key for AES.
@@ -382,6 +475,26 @@ Example3: Generating the key yourself, and loading any key using the loadKey met
                 .plaintext(plainText)
                 .optionalAssociatedData(associatedData)
                 .encrypt();
+```
+
+3. You did encryption earlier for some a desired language, but later like to decrypt it using SafEncrypt in Java Only ?
+
+
+```java
+        byte[] plainText = "TU Clausthal Located in Clausthal Zellerfeld".getBytes(StandardCharsets.UTF_8);
+        byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
+
+        SymmetricCipherBase64 symmetricCipherBase64 = SafEncrypt.symmetricInteroperableEncryption(SymmetricInteroperabilityLanguages.Sample_JavaScript)
+                .plaintext(plainText)
+                .optionalAssociatedData(associatedData)
+                .encrypt();
+
+        byte[] decryptedText = SafEncrypt.symmetricInteroperableDecryption(SymmetricInteroperabilityLanguages.Sample_JavaScript)
+                .keyAlias(symmetricCipherBase64.keyAlias())
+                .ivBase64(symmetricCipherBase64.iv())
+                .cipherTextBase64(symmetricCipherBase64.cipherText())
+                .optionalAssociatedData(associatedData)
+                .decrypt();
 ```
             
 
