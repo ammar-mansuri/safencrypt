@@ -6,6 +6,7 @@ import com.safencrypt.config.SymmetricConfig;
 import com.safencrypt.enums.SymmetricAlgorithm;
 import com.safencrypt.exceptions.SafencryptException;
 import com.safencrypt.models.SymmetricStreamingCipher;
+import com.safencrypt.utils.ErrorCodes;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -81,7 +82,7 @@ public class SymmetricStreamingImpl {
 
     @SneakyThrows
     protected SymmetricStreamingCipher encrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, final File inputFile, final File outputFile) {
-        log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
+        log.warn(errorConfig.message(ErrorCodes.SAF_011.name(), getAlgorithmAndMode(symmetricAlgorithm)));
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
 
@@ -115,7 +116,7 @@ public class SymmetricStreamingImpl {
 
     @SneakyThrows
     protected void decrypt(int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, final File inputFile, final File outputFile) {
-        log.warn(errorConfig.message("SAF-011", getAlgorithmAndMode(symmetricAlgorithm)));
+        log.warn(errorConfig.message(ErrorCodes.SAF_011.name(), getAlgorithmAndMode(symmetricAlgorithm)));
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
         isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
@@ -162,13 +163,13 @@ public class SymmetricStreamingImpl {
                 Security.addProvider(new BouncyCastleProvider());
                 return Cipher.getInstance(algorithm, "BC");
             } catch (NoSuchPaddingException ex) {
-                throw new SafencryptException(errorConfig.message("SAF-012", ex, symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_012.name(), ex, symmetricAlgorithm.getLabel()));
             } catch (NoSuchAlgorithmException ex) {
-                throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             } catch (NoSuchProviderException ex) {
-                throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             } catch (Exception ex) {
-                throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             }
         }
     }
@@ -178,9 +179,9 @@ public class SymmetricStreamingImpl {
             return Cipher.getInstance(getAlgorithmForCipher(symmetricAlgorithm));
 
         } catch (NoSuchAlgorithmException ex) {
-            throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         } catch (Exception ex) {
-            throw new SafencryptException(errorConfig.message("SAF-004", ex, symmetricAlgorithm.getLabel()));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         }
     }
 
@@ -189,7 +190,7 @@ public class SymmetricStreamingImpl {
         if (symmetricConfig.algorithms().contains(symmetricAlgorithm))
             return;
 
-        throw new SafencryptException(errorConfig.message("SAF-001", symmetricAlgorithm));
+        throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_001.name(), symmetricAlgorithm));
     }
 
     @SneakyThrows
@@ -204,11 +205,11 @@ public class SymmetricStreamingImpl {
 
 
         if (Arrays.equals(secretKey.getEncoded(), new byte[secretKey.getEncoded().length])) {
-            throw new SafencryptException(errorConfig.message("SAF-015"));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_015.name()));
         }
 
         if (!allowedKeyLength.contains(keyLength) || keyLength != getKeySize(symmetricAlgorithm)) {
-            throw new SafencryptException(errorConfig.message("SAF-003", String.valueOf(secretKey.getEncoded().length), symmetricAlgorithm.getLabel(), String.valueOf(getKeySize(symmetricAlgorithm) / 8)));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_003.name(), String.valueOf(secretKey.getEncoded().length), symmetricAlgorithm.getLabel(), String.valueOf(getKeySize(symmetricAlgorithm) / 8)));
         }
     }
 
@@ -217,7 +218,7 @@ public class SymmetricStreamingImpl {
     protected void isIvLengthCorrect(byte[] iv, int IV_SIZE, SymmetricAlgorithm symmetricAlgorithm) {
 
         if (iv.length != IV_SIZE) {
-            throw new SafencryptException(errorConfig.message("SAF-014", String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(IV_SIZE)));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_014.name(), String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(IV_SIZE)));
         }
     }
 }

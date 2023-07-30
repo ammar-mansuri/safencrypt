@@ -3,6 +3,7 @@ package com.safencrypt.service;
 import com.safencrypt.config.ErrorConfig;
 import com.safencrypt.config.KeyStoreConfig;
 import com.safencrypt.exceptions.SafencryptException;
+import com.safencrypt.utils.ErrorCodes;
 import lombok.SneakyThrows;
 
 import javax.crypto.SecretKey;
@@ -63,7 +64,7 @@ public class SymmetricKeyStore {
 
             return secretKey;
         } catch (Exception e) {
-            throw new SafencryptException(errorConfig.message("SAF-006", e, alias));
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_006.name(), e, alias));
         }
 
     }
