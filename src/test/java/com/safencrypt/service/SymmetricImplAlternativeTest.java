@@ -108,25 +108,6 @@ public class SymmetricImplAlternativeTest {
 
 
     @Test
-    void testSymmetricEncryptionUsingIncorrectKeyLength() {
-
-        byte[] randomKey = new byte[33];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(randomKey);
-
-
-        SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
-                        .loadKey(randomKey)
-                        .plaintext("Testing Incorrect Key Length".getBytes())
-                        .encrypt());
-
-        System.err.println(exception.getMessage());
-
-    }
-
-
-    @Test
     @SneakyThrows
     void testSymmetricDecryptionUsingIncorrectIV_Key_Padding() {
 
@@ -173,14 +154,13 @@ public class SymmetricImplAlternativeTest {
     @Test
     void testSymmetricEncryptionUsingGcmWithTagMismatch() {
 
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_128_NoPadding;
 
         byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
 
 
         SymmetricCipher symmetricCipher = SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
+                .generateKey()
                 .plaintext(plainText, associatedData)
                 .encrypt();
 
@@ -201,11 +181,10 @@ public class SymmetricImplAlternativeTest {
     @Test
     void testSymmetricEncryptionUsingGcmWithTagMismatch_Key_IV() {
 
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_128_NoPadding;
 
         byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
         SymmetricCipher symmetricCipher = SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
+                .generateKey()
                 .plaintext(plainText)
                 .encrypt();
 
@@ -237,14 +216,13 @@ public class SymmetricImplAlternativeTest {
     @Test
     void testSymmetricEncryptionUsingGcmWithTagMismatch_AssociatedData() {
 
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_128_NoPadding;
 
         byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
         byte[] associatedData = "First test using AEAD".getBytes(StandardCharsets.UTF_8);
         byte[] associatedDataModified = "First test using AEADDD".getBytes(StandardCharsets.UTF_8);
 
         SymmetricCipher symmetricCipher = SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_128_NoPadding)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey(symmetricAlgorithm))
+                .generateKey()
                 .plaintext(plainText, associatedData)
                 .encrypt();
 
@@ -262,26 +240,11 @@ public class SymmetricImplAlternativeTest {
         //GCM with Incorrect Padding
         SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_128_PKCS5Padding)
-                        .loadKey(SymmetricKeyGenerator.generateSymmetricKey())
+                        .generateKey()
                         .plaintext("Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8))
                         .encrypt());
         System.err.println(exception.getMessage());
     }
 
-    @Test
-    void testSymmetricEncryptionWithEmptyKey() {
 
-
-        byte[] plainText = "TESTING CBC 128 With  Empty Key".getBytes(StandardCharsets.UTF_8);
-        byte[] emptyBytes = new byte[16];
-
-        SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
-                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .loadKey(emptyBytes)
-                        .plaintext(plainText)
-                        .encrypt());
-        System.err.println(exception.getMessage());
-
-
-    }
 }

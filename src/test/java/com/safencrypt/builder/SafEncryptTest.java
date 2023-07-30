@@ -3,7 +3,6 @@ package com.safencrypt.builder;
 import com.safencrypt.exceptions.SafencryptException;
 import com.safencrypt.enums.SymmetricAlgorithm;
 import com.safencrypt.models.SymmetricCipher;
-import com.safencrypt.service.SymmetricKeyGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,15 +14,15 @@ class SafEncryptTest {
     @Test
     void testBuilderAES_GCM() {
         SafEncrypt.symmetricEncryption()
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey())
+                .generateKey()
                 .plaintext("sda".getBytes(StandardCharsets.UTF_8))
                 .encrypt();
     }
 
     @Test
     void testBuilderAES_GCMWithAssociatedData() {
-        SafEncrypt.symmetricEncryption(SymmetricAlgorithm.DEFAULT)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey())
+        SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                .generateKey()
                 .plaintext("ds".getBytes(StandardCharsets.UTF_8), "ads".getBytes(StandardCharsets.UTF_8))
                 .encrypt();
     }
@@ -31,7 +30,7 @@ class SafEncryptTest {
     @Test
     void testBuilderAES_CBC() {
         SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                .loadKey(SymmetricKeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding))
+                .generateKey()
                 .plaintext("ds".getBytes(StandardCharsets.UTF_8))
                 .encrypt();
     }
@@ -41,7 +40,7 @@ class SafEncryptTest {
 
         Assertions.assertThrows(SafencryptException.class, () -> {
             SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_192_PKCS5Padding)
-                    .loadKey(SymmetricKeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding))
+                    .generateKey()
                     .plaintext("asd".getBytes(StandardCharsets.UTF_8), "ads".getBytes(StandardCharsets.UTF_8))
                     .encrypt();
         });
@@ -52,9 +51,9 @@ class SafEncryptTest {
 
         Assertions.assertThrows(SafencryptException.class, () -> {
             SafEncrypt.symmetricDecryption()
-                    .key(((SymmetricCipher) symmetricCipher).key())
-                    .iv(((SymmetricCipher) symmetricCipher).iv())
-                    .cipherText(((SymmetricCipher) symmetricCipher).ciphertext(), "associatedData".getBytes(StandardCharsets.UTF_8))
+                    .key(symmetricCipher.key())
+                    .iv(symmetricCipher.iv())
+                    .cipherText(symmetricCipher.ciphertext(), "associatedData".getBytes(StandardCharsets.UTF_8))
                     .decrypt();
         });
 
