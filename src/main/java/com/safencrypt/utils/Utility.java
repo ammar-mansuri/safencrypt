@@ -5,7 +5,6 @@ import com.safencrypt.enums.SymmetricAlgorithm;
 import com.safencrypt.models.SymmetricCipher;
 import com.safencrypt.models.SymmetricCipherBase64;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
@@ -63,12 +62,12 @@ public class Utility {
         return safEncrypt.getKey() != null && safEncrypt.getKey().getEncoded().length > 0;
     }
 
-    public static IvParameterSpec generateIv(final int IV_LENGTH) {
+    public static byte[] generateIv(final int IV_LENGTH) {
 
         final byte[] iv = new byte[IV_LENGTH];
         final Random random = new SecureRandom();
         random.nextBytes(iv);
-        return new IvParameterSpec(iv);
+        return iv;
     }
 
 

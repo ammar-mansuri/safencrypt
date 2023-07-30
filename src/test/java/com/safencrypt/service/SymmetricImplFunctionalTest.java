@@ -256,6 +256,7 @@ class SymmetricImplFunctionalTest {
                         .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
                         .encrypt();
 
+        Assertions.assertNotNull(symmetricStreamingCipher);
 
         SafEncrypt.symmetricDecryption()
                 .key(symmetricStreamingCipher.key())
@@ -274,6 +275,7 @@ class SymmetricImplFunctionalTest {
                         .plainFileStream(new File(resources_path + "input/dummy_image.png"), new File(resources_path + "output/cipherImage.png"))
                         .encrypt();
 
+        Assertions.assertNotNull(symmetricStreamingCipher);
 
         SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_256_PKCS5Padding)
                 .key(symmetricStreamingCipher.key())
@@ -292,7 +294,8 @@ class SymmetricImplFunctionalTest {
                         .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
                         .encrypt();
 
-
+        Assertions.assertNotNull(symmetricStreamingCipher);
+        
         SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
                 .key(symmetricStreamingCipher.key())
                 .iv(symmetricStreamingCipher.iv())

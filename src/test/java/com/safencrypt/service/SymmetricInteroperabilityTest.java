@@ -42,7 +42,8 @@ class SymmetricInteroperabilityTest {
                 .plaintext(plainText)
                 .encrypt();
 
-        System.out.println(symmetricCipherBase64.toString());
+        Assertions.assertNotNull(symmetricCipherBase64);
+        System.out.println(symmetricCipherBase64);
     }
 
 
@@ -55,7 +56,8 @@ class SymmetricInteroperabilityTest {
                 .plaintext(plainText)
                 .encrypt();
 
-        System.out.println(symmetricCipherBase64.toString());
+        Assertions.assertNotNull(symmetricCipherBase64);
+        System.out.println(symmetricCipherBase64);
     }
 
 
@@ -68,7 +70,8 @@ class SymmetricInteroperabilityTest {
                 .plaintext(plainText)
                 .encrypt();
 
-        System.out.println(symmetricCipherBase64.toString());
+        Assertions.assertNotNull(symmetricCipherBase64);
+        System.out.println(symmetricCipherBase64);
     }
 
 

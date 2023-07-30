@@ -23,6 +23,7 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static com.safencrypt.utils.Utility.*;
 
@@ -88,7 +89,7 @@ public class SymmetricImpl {
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
         final Cipher cipher = cbcCipherHelper(symmetricAlgorithm);
-        final IvParameterSpec ivSpec = generateIv(ivSize);
+        final IvParameterSpec ivSpec = new IvParameterSpec(generateIv(ivSize));
         isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
         final byte[] ciphertext = cipher.doFinal(plaintext);
@@ -106,10 +107,6 @@ public class SymmetricImpl {
                 return Cipher.getInstance(algorithm, "BC");
             } catch (NoSuchPaddingException ex) {
                 throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_012.name(), ex, symmetricAlgorithm.getLabel()));
-            } catch (NoSuchAlgorithmException ex) {
-                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
-            } catch (NoSuchProviderException ex) {
-                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             } catch (Exception ex) {
                 throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             }
@@ -124,7 +121,7 @@ public class SymmetricImpl {
 
         final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
 
-        final IvParameterSpec ivSpec = generateIv(ivSize);
+        final IvParameterSpec ivSpec = new IvParameterSpec(generateIv(ivSize));
         isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, ivSpec.getIV()));
 
@@ -140,8 +137,6 @@ public class SymmetricImpl {
         try {
             return Cipher.getInstance(getAlgorithmForCipher(symmetricAlgorithm));
 
-        } catch (NoSuchAlgorithmException ex) {
-            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         } catch (Exception ex) {
             throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         }
@@ -160,7 +155,8 @@ public class SymmetricImpl {
         return cipher.doFinal(cipherText);
     }
 
-    protected byte[] decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText, byte[] associatedData) throws Exception {
+    @SneakyThrows
+    protected byte[] decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, byte[] cipherText, byte[] associatedData) {
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
         isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
@@ -189,11 +185,8 @@ public class SymmetricImpl {
     protected void isKeyLengthCorrect(SecretKey secretKey, SymmetricAlgorithm symmetricAlgorithm) {
 
         final int keyLength = secretKey.getEncoded().length * 8;
-        final HashSet<Integer> allowedKeyLength = new HashSet<>() {{
-            add(128);
-            add(192);
-            add(256);
-        }};
+        final HashSet<Integer> allowedKeyLength = new HashSet<>();
+        allowedKeyLength.addAll(List.of(128, 192, 256));
 
 
         if (Arrays.equals(secretKey.getEncoded(), new byte[secretKey.getEncoded().length])) {
@@ -207,10 +200,10 @@ public class SymmetricImpl {
 
 
     @SneakyThrows
-    protected void isIvLengthCorrect(byte[] iv, int IV_SIZE, SymmetricAlgorithm symmetricAlgorithm) {
+    protected void isIvLengthCorrect(byte[] iv, int ivSize, SymmetricAlgorithm symmetricAlgorithm) {
 
-        if (iv.length != IV_SIZE) {
-            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_014.name(), String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(IV_SIZE)));
+        if (iv.length != ivSize) {
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_014.name(), String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(ivSize)));
         }
     }
 }

@@ -21,6 +21,7 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static com.safencrypt.utils.Utility.*;
 
@@ -87,7 +88,7 @@ public class SymmetricStreamingImpl {
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
 
         final Cipher cipher = cbcCipherHelper(symmetricAlgorithm);
-        final IvParameterSpec ivSpec = generateIv(ivSize);
+        final IvParameterSpec ivSpec = new IvParameterSpec(generateIv(ivSize));
         isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
         streamingCipherHelper(inputFile, outputFile, cipher);
@@ -102,7 +103,7 @@ public class SymmetricStreamingImpl {
 
         final Cipher cipher = gcmCipherHelper(symmetricAlgorithm);
 
-        final IvParameterSpec ivSpec = generateIv(ivSize);
+        final IvParameterSpec ivSpec = new IvParameterSpec(generateIv(ivSize));
         isIvLengthCorrect(ivSpec.getIV(), ivSize, symmetricAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(tagLength, ivSpec.getIV()));
 
@@ -126,7 +127,8 @@ public class SymmetricStreamingImpl {
 
     }
 
-    protected void decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, final File inputFile, final File outputFile, byte[] associatedData) throws Exception {
+    @SneakyThrows
+    protected void decryptWithGCM(int tagLength, int ivSize, SymmetricAlgorithm symmetricAlgorithm, SecretKey secretKey, byte[] iv, final File inputFile, final File outputFile, byte[] associatedData) {
         isAlgorithmSecure(symmetricAlgorithm.getLabel());
         isKeyLengthCorrect(secretKey, symmetricAlgorithm);
         isIvLengthCorrect(iv, ivSize, symmetricAlgorithm);
@@ -147,8 +149,6 @@ public class SymmetricStreamingImpl {
                     }
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new SafencryptException(e);
         } catch (IOException e) {
             throw new SafencryptException(e);
         }
@@ -164,10 +164,6 @@ public class SymmetricStreamingImpl {
                 return Cipher.getInstance(algorithm, "BC");
             } catch (NoSuchPaddingException ex) {
                 throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_012.name(), ex, symmetricAlgorithm.getLabel()));
-            } catch (NoSuchAlgorithmException ex) {
-                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
-            } catch (NoSuchProviderException ex) {
-                throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             } catch (Exception ex) {
                 throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
             }
@@ -178,8 +174,6 @@ public class SymmetricStreamingImpl {
         try {
             return Cipher.getInstance(getAlgorithmForCipher(symmetricAlgorithm));
 
-        } catch (NoSuchAlgorithmException ex) {
-            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         } catch (Exception ex) {
             throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_004.name(), ex, symmetricAlgorithm.getLabel()));
         }
@@ -197,12 +191,8 @@ public class SymmetricStreamingImpl {
     protected void isKeyLengthCorrect(SecretKey secretKey, SymmetricAlgorithm symmetricAlgorithm) {
 
         final int keyLength = secretKey.getEncoded().length * 8;
-        final HashSet<Integer> allowedKeyLength = new HashSet<>() {{
-            add(128);
-            add(192);
-            add(256);
-        }};
-
+        final HashSet<Integer> allowedKeyLength = new HashSet<>();
+        allowedKeyLength.addAll(List.of(128, 192, 256));
 
         if (Arrays.equals(secretKey.getEncoded(), new byte[secretKey.getEncoded().length])) {
             throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_015.name()));
@@ -215,10 +205,10 @@ public class SymmetricStreamingImpl {
 
 
     @SneakyThrows
-    protected void isIvLengthCorrect(byte[] iv, int IV_SIZE, SymmetricAlgorithm symmetricAlgorithm) {
+    protected void isIvLengthCorrect(byte[] iv, int ivSize, SymmetricAlgorithm symmetricAlgorithm) {
 
-        if (iv.length != IV_SIZE) {
-            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_014.name(), String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(IV_SIZE)));
+        if (iv.length != ivSize) {
+            throw new SafencryptException(errorConfig.message(ErrorCodes.SAF_014.name(), String.valueOf(iv.length), symmetricAlgorithm.getLabel(), String.valueOf(ivSize)));
         }
     }
 }

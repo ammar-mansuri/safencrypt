@@ -54,24 +54,23 @@ public class SafEncrypt {
     private SymmetricStreamingImpl symmetricStreamingImpl;
     private SymmetricConfig symmetricConfig;
     private ErrorConfig errorConfig;
-    private ConfigParser configParser = new ConfigParser();
 
 
     private SafEncrypt() {
-        this.symmetricConfig = configParser.getSymmetricConfig();
-        this.errorConfig = configParser.getErrorConfig();
+        this.symmetricConfig = ConfigParser.getSymmetricConfig();
+        this.errorConfig = ConfigParser.getErrorConfig();
         this.symmetricImpl = new SymmetricImpl(symmetricConfig, errorConfig);
         this.symmetricStreamingImpl = new SymmetricStreamingImpl(symmetricConfig, errorConfig);
 
         /*  Interoperability START */
-        this.symmetricInteroperabilityConfig = configParser.getInteroperabilityConfig();
-        this.keyStoreConfig = configParser.getKeystoreConfig();
+        this.symmetricInteroperabilityConfig = ConfigParser.getInteroperabilityConfig();
+        this.keyStoreConfig = ConfigParser.getKeystoreConfig();
         this.symmetricKeyStore = new SymmetricKeyStore(keyStoreConfig, errorConfig);
         this.symmetricInteroperable = new SymmetricInteroperable(symmetricKeyStore, symmetricInteroperabilityConfig, symmetricImpl);
         /*  Interoperability  END */
 
 
-        encryption = this;
+//        encryption = this;
     }
 
     public SymmetricAlgorithm getSymmetricAlgorithm() {
@@ -632,8 +631,6 @@ public class SafEncrypt {
             if (StringUtils.isBlank(cipherText))
                 throw new SafencryptException(encryption.errorConfig.message(ErrorCodes.SAF_023.name()));
 
-            final String languageName = encryption.getSymmetricInteroperabilityLanguages().name();
-            SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.fromLabel(encryption.symmetricInteroperabilityConfig.languageDetails(languageName).symmetric().defaultAlgo());
 
             /**
              * Extension for providing Tag Separately for AES_GCM

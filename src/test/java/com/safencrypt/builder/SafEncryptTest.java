@@ -13,26 +13,32 @@ class SafEncryptTest {
 
     @Test
     void testBuilderAES_GCM() {
-        SafEncrypt.symmetricEncryption()
-                .generateKey()
-                .plaintext("sda".getBytes(StandardCharsets.UTF_8))
-                .encrypt();
+        Assertions.assertDoesNotThrow(() -> {
+            SafEncrypt.symmetricEncryption()
+                    .generateKey()
+                    .plaintext("sda".getBytes(StandardCharsets.UTF_8))
+                    .encrypt();
+        });
     }
 
     @Test
     void testBuilderAES_GCMWithAssociatedData() {
-        SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                .generateKey()
-                .plaintext("ds".getBytes(StandardCharsets.UTF_8), "ads".getBytes(StandardCharsets.UTF_8))
-                .encrypt();
+        Assertions.assertDoesNotThrow(() -> {
+            SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
+                    .generateKey()
+                    .plaintext("ds".getBytes(StandardCharsets.UTF_8), "ads".getBytes(StandardCharsets.UTF_8))
+                    .encrypt();
+        });
     }
 
     @Test
     void testBuilderAES_CBC() {
-        SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                .generateKey()
-                .plaintext("ds".getBytes(StandardCharsets.UTF_8))
-                .encrypt();
+        Assertions.assertDoesNotThrow(() -> {
+            SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                    .generateKey()
+                    .plaintext("ds".getBytes(StandardCharsets.UTF_8))
+                    .encrypt();
+        });
     }
 
     @Test
@@ -67,6 +73,8 @@ class SafEncryptTest {
                 SafEncrypt.symmetricEncryption().generateKey()
                         .plaintext("ammar".getBytes(StandardCharsets.UTF_8))
                         .encrypt();
+
+        Assertions.assertNotNull(symmetricCipher);
 
         SafEncrypt
                 .symmetricDecryption()

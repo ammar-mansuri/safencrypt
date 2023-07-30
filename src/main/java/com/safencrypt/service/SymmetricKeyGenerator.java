@@ -16,8 +16,7 @@ import java.security.SecureRandom;
 
 public class SymmetricKeyGenerator {
 
-    private static ConfigParser configParser = new ConfigParser();
-    private static PBEKeyConfig pbeKeyConfig = configParser.getPbKeyConfig();
+    private static PBEKeyConfig pbeKeyConfig = ConfigParser.getPbKeyConfig();
 
     public static byte[] generateSymmetricKey() {
         return generateSymmetricKey(SymmetricAlgorithm.DEFAULT);
