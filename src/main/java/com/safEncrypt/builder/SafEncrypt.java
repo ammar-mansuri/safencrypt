@@ -166,15 +166,19 @@ public class SafEncrypt {
             this.encryption.symmetricAlgorithm = symmetricAlgorithm;
         }
 
-        @SneakyThrows
+        /**
+         * Disabling Key Loading to prevent usage of unsecure key material
+         *
+         * @return
+         */
+        /*@SneakyThrows
         public PlaintextBuilder loadKey(byte[] key) {
             if (key == null || StringUtils.isBlank(new String(key, StandardCharsets.UTF_8)))
                 throw new SafencryptException(encryption.errorConfig.message("SAF-018"));
 
             encryption.key = new SecretKeySpec(key, "AES");
             return new PlaintextBuilder(encryption);
-        }
-
+        }*/
         @SneakyThrows
         public PlaintextBuilder generateKey() {
 

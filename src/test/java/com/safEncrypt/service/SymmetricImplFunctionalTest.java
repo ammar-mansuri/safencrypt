@@ -63,54 +63,7 @@ class SymmetricImplFunctionalTest {
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
 
     }
-
-    @Test
-    void testSymmetricEncryptionUsingKeyLoading2_3() {
-
-        byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
-        byte[] key = new byte[16];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(key);
-
-        SymmetricCipher symmetricCipher =
-                SafEncrypt.symmetricEncryption()
-                        .loadKey(key)
-                        .plaintext(plainText)
-                        .encrypt();
-
-        byte[] decryptedText =
-                SafEncrypt.symmetricDecryption()
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
-                        .decrypt();
-
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
-    }
-
-    @Test
-    void testSymmetricEncryptionUsingKeyLoading2_2() {
-
-        byte[] plainText = "Hello World 121@#".getBytes(StandardCharsets.UTF_8);
-        byte[] key = SymmetricKeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding);
-
-        SymmetricCipher symmetricCipher =
-                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .loadKey(key)
-                        .plaintext(plainText)
-                        .encrypt();
-
-        String aa = Base64.getEncoder().encodeToString(symmetricCipher.ciphertext());
-
-
-        byte[] decryptedText =
-                SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
-                        .decrypt();
-        Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
-    }
+    
 
     @Test
     void testSymmetricEncryptionUsingPassword2_1() {
