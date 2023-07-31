@@ -216,7 +216,7 @@ SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_G
 ```java
 SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("strongPassword".getBytes())
+                        .generateKeyFromPassword("strongPassword".toCharArray())
                         .plaintext(plainText)
                         .encrypt();
 ```
@@ -226,7 +226,7 @@ SymmetricCipher symmetricCipher =
 ```java
 SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("strongPassword".getBytes(), KeyAlgorithm.PBKDF2_With_Hmac_SHA512)
+                        .generateKeyFromPassword("strongPassword".toCharArray(), KeyAlgorithm.PBKDF2_With_Hmac_SHA512)
                         .plaintext(plainText)
                         .encrypt();
 ```
@@ -260,7 +260,7 @@ SymmetricCipher symmetricCipher =
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption()
-                        .generateKeyFromPassword("strongPassword".getBytes())
+                        .generateKeyFromPassword("strongPassword".toCharArray())
                         .plaintext(plainText)
                         .encrypt();
 
@@ -394,7 +394,7 @@ SymmetricCipher symmetricCipher =
 ```java
         SymmetricStreamingCipher symmetricStreamingCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("filePassword".getBytes())
+                        .generateKeyFromPassword("filePassword".toCharArray())
                         .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
                         .encrypt();
 
@@ -470,7 +470,7 @@ There are a number of questions asked by users on StackOverflow pertaining to th
 2. How can I derive a key from a password?
 
 
-    In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+    In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".toCharArray())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
 
 3. What is the default value if I do not specify padding?
 
@@ -523,7 +523,7 @@ There are a number of questions asked by users on StackOverflow pertaining to th
 12. How to correctly specify key derivation using PBKDF2?
 
 
-    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".toCharArray())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
 
 13. How can I securely store a key after encryption?	
 
@@ -588,7 +588,7 @@ There are a number of questions asked by users on StackOverflow pertaining to th
 25. How is password based encryption implemented in JCA?
 
 
-    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+    When using SafEncrypt you don’t have to worrry about interacting with PBKDF2 directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".toCharArray())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
 
 26. What size is the output generated by AES-GCM encryption?
 
@@ -613,7 +613,7 @@ There are a number of questions asked by users on StackOverflow pertaining to th
 30. How can I specify PBEKeySpec correctly?	
 
 
-    When using SafEncrypt you don’t have to worrry about interacting with PBEKeySpec directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".getBytes())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
+    When using SafEncrypt you don’t have to worrry about interacting with PBEKeySpec directly. In order to derive the key from a password, you just need to use the method ".generateKeyFromPassword("strongPassword".toCharArray())" and provide the password in bytes when using the SafEncrypt builder. SafEncrypt will generate the key from the user provided password and use it for encryption purposes. The default algorithm for password based key generation is "PBKDF2WithHmacSHA512". However, if you want to change the key derviation algorithm you can provide an Enum from the KeyAlgorithm class in the second paramater when specifying the password. 
 
 31. How can I specify DESedeKeySpec correctly?	
 
