@@ -200,8 +200,11 @@ public class SafEncrypt {
             try {
                 encryption.key = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKeyFromPassword(password, getKeySize(encryption.symmetricAlgorithm)), "AES");
             } catch (Exception ex) {
-                if (ex instanceof NoSuchAlgorithmException)
+                if (ex instanceof SafencryptException) {
+                    throw ex;
+                } else if (ex instanceof NoSuchAlgorithmException)
                     throw new SafencryptException(encryption.errorConfig.message(ErrorCodes.SAF_004.name(), ex, encryption.symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(ex.getMessage(), ex);
             }
             return new PlaintextBuilder(encryption);
         }
@@ -216,8 +219,11 @@ public class SafEncrypt {
             try {
                 encryption.key = new SecretKeySpec(SymmetricKeyGenerator.generateSymmetricKeyFromPassword(password, keyAlgorithm, getKeySize(encryption.symmetricAlgorithm)), "AES");
             } catch (Exception ex) {
-                if (ex instanceof NoSuchAlgorithmException)
+                if (ex instanceof SafencryptException) {
+                    throw ex;
+                } else if (ex instanceof NoSuchAlgorithmException)
                     throw new SafencryptException(encryption.errorConfig.message(ErrorCodes.SAF_004.name(), ex, encryption.symmetricAlgorithm.getLabel()));
+                throw new SafencryptException(ex.getMessage(), ex);
             }
             return new PlaintextBuilder(encryption);
         }

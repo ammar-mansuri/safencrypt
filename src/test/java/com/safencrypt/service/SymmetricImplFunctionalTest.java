@@ -70,7 +70,7 @@ class SymmetricImplFunctionalTest {
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("strongPassword".getBytes())
+                        .generateKeyFromPassword("@34StrongPassword".getBytes())
                         .plaintext(plainText)
                         .encrypt();
 
@@ -290,12 +290,12 @@ class SymmetricImplFunctionalTest {
 
         SymmetricStreamingCipher symmetricStreamingCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("filePassword".getBytes())
+                        .generateKeyFromPassword("filePassword$52#".getBytes())
                         .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
                         .encrypt();
 
         Assertions.assertNotNull(symmetricStreamingCipher);
-        
+
         SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
                 .key(symmetricStreamingCipher.key())
                 .iv(symmetricStreamingCipher.iv())
