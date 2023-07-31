@@ -27,11 +27,11 @@ class SymmetricKeyGeneratorTest {
 
     @Test
     void createSymmetricKeyFromPasswordUsingDefaultAlgo() {
-        Assertions.assertNotNull(SymmetricKeyGenerator.generateSymmetricKeyFromPassword("byte23241dsa".getBytes(), 128));
+        Assertions.assertNotNull(SymmetricKeyGenerator.generateSymmetricKeyFromPassword("byte23241dsa".toCharArray(), 128));
     }
 
     @Test
     void createSymmetricKeyFromPasswordUsingAlgo() {
-        Assertions.assertNotNull(SymmetricKeyGenerator.generateSymmetricKeyFromPassword("sdfaaf$5423".getBytes(), KeyAlgorithm.PBKDF2_With_Hmac_SHA256, 128));
+        Assertions.assertNotNull(SymmetricKeyGenerator.generateSymmetricKeyFromPassword("sdfaaf$5423".toCharArray(), KeyAlgorithm.PBKDF2_With_Hmac_SHA256, 128));
     }
 }

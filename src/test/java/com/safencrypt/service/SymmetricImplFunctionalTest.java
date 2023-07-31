@@ -70,7 +70,7 @@ class SymmetricImplFunctionalTest {
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("@34StrongPassword".getBytes())
+                        .generateKeyFromPassword("@34StrongPassword".toCharArray())
                         .plaintext(plainText)
                         .encrypt();
 
@@ -210,7 +210,7 @@ class SymmetricImplFunctionalTest {
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
-                        .generateKeyFromPassword("hellow testing gcm 128 with sha 512 key".getBytes())
+                        .generateKeyFromPassword("hellow testing gcm 128 with sha 512 key".toCharArray())
                         .plaintext(plainText)
                         .encrypt();
 
@@ -231,7 +231,7 @@ class SymmetricImplFunctionalTest {
 
         SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricEncryption()
-                        .generateKeyFromPassword("hellow testing gcm 128 and key with sha-256".getBytes(), KeyAlgorithm.PBKDF2_With_Hmac_SHA256)
+                        .generateKeyFromPassword("hellow testing gcm 128 and key with sha-256".toCharArray(), KeyAlgorithm.PBKDF2_With_Hmac_SHA256)
                         .plaintext(plainText)
                         .encrypt();
 
@@ -290,7 +290,7 @@ class SymmetricImplFunctionalTest {
 
         SymmetricStreamingCipher symmetricStreamingCipher =
                 SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKeyFromPassword("filePassword$52#".getBytes())
+                        .generateKeyFromPassword("filePassword$52#".toCharArray())
                         .plainFileStream(new File(resources_path + "input/plainTextFile.txt"), new File(resources_path + "output/plainTextEncFile.txt"))
                         .encrypt();
 

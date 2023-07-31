@@ -31,20 +31,20 @@ public class SymmetricKeyGenerator {
     }
 
 
-    public static byte[] generateSymmetricKeyFromPassword(byte[] password, int keyLength) {
+    public static byte[] generateSymmetricKeyFromPassword(char[] password, int keyLength) {
         return generateSymmetricKeyFromPassword(password, KeyAlgorithm.DEFAULT, keyLength);
     }
 
 
     @SneakyThrows
-    public static byte[] generateSymmetricKeyFromPassword(byte[] password, KeyAlgorithm keyAlgorithm, int keyLength) {
+    public static byte[] generateSymmetricKeyFromPassword(char[] password, KeyAlgorithm keyAlgorithm, int keyLength) {
 
         final byte[] salts = new byte[pbeKeyConfig.saltLength()];
         final SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salts);
 
         final SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(keyAlgorithm.getLabel());
-        final PBEKeySpec pbeKeySpec = new PBEKeySpec(new String(password, StandardCharsets.UTF_8).toCharArray(), salts, pbeKeyConfig.iterations(), keyLength);
+        final PBEKeySpec pbeKeySpec = new PBEKeySpec(password, salts, pbeKeyConfig.iterations(), keyLength);
         final SecretKey key = secretKeyFactory.generateSecret(pbeKeySpec);
         return key.getEncoded();
 
