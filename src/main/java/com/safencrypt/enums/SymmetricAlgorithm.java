@@ -9,12 +9,6 @@ import java.util.Arrays;
 public enum SymmetricAlgorithm {
 
 
-    //Just for testing, To be removed
-    AES_CBC_128_NoPadding("AES_CBC_128_NoPadding"),         //Test for Unsecure Algo Not Present in Config
-    AES_CBC_128_NopPadding("AES_CBC_256_NoPPadding"),   //Enabled To Test Incorrect Padding
-    AESS_CBC_128_PKCS5Padding("AESS_CBC_128_PKCS5Padding"),
-    AES_GCM_128_PKCS5Padding("AES_GCM_128_PKCS5Padding"),
-
     //Correct Algorithms Currently Supported and ENABLED to promote Interoperability
     AES_CBC_128_PKCS7Padding("AES_CBC_128_PKCS7Padding"),
     AES_CBC_192_PKCS7Padding("AES_CBC_192_PKCS7Padding"),
