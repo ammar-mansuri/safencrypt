@@ -56,10 +56,15 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 ## Notes
 
 1. Through out the library, the algorithms are used in the specified notation "AES_GCM_128_NoPadding". The breakdown of which is Algorithm+Mode+KeyLength+Padding. 
+ 
 
-2. The library uses safe defaults for the creation of Initialization Vector (IV) during encryption, which is returned back to the user for further usage (decryption).
+2. The library doesn't allow to use a custom generated key. When using the library user is just provided with options from generate a secure random symmetric key or generating a key from a password. Please refer to  Key Generation section to have a practical overview.
 
-3. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
+
+3. The library uses safe defaults for the creation of Initialization Vector (IV) during encryption, which is returned back to the user for further usage (decryption).
+
+
+4. The default Algorithm of the library, unless specified by the user, is "AES_GCM_128_NoPadding". If you dont specify the algorithm in parameter of the encryption/decryption builder, it will automatically pick the DEFAULT one. 
 
 ```java
     SafEncrypt.symmetricEncryption()
@@ -69,9 +74,11 @@ Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
     SafEncrypt.symmetricDecryption()
 ```
 
-4. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
 
-5. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
+5. Enum class SymmetricAlgorithm contains a list of the algorithms that are supported currently by the library, provided that they are set as SECURE in the configuration file. 
+
+
+6. When you dont want to use the DEFAULT algorithm for encryption/decryption purposes, please make sure to specify the correct ALGORITHM from the SymmetricAlgorithm class while creating the builder.
 
 ```java
     SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
@@ -100,7 +107,7 @@ OR (As the default encoding in java is UTF-8)
     byte[] plainText = "Hello World 121@#".getBytes();
 ```
 
-2. When you get the plainText bytes[] back after the Decryption process, simlary it should be DECODED to get back the correct plain text. 
+2. When you get the plainText bytes[] back after the Decryption process, similarly it should be DECODED to get back the correct plain text. 
 
 ```java
     new String(plainTextBytes[] , StandardCharsets.UTF_8);
@@ -196,19 +203,30 @@ This file contains the list of algorithms currently supported by SafEncrypt w.r.
   "password": "changeit"
 }
 ```
-This file contains the kyestore configuration that is used for Interoperable Symmetric Encryption. filePath is the path where the user want to have the keystore created OR the path where the keystore exists. Password is the keystore password and well as each of the entry is keystore is protexted with this password. When doing Interoperable Symmetric Encryption, SafEncrypt will save the keys in this keystore and return the key alias to the user which will be required to fetch the key in future during decryption process in another language. 
+This file contains the kyestore configuration that is used for Interoperable Symmetric Encryption. filePath is the path where the user want to have the keystore created OR the path where the keystore exists. Password is the keystore password and well as each of the entry is keystore is protected with this password. When doing Interoperable Symmetric Encryption, SafEncrypt will save the keys in this keystore and return the key alias to the user which will be required to fetch the key in future during decryption process in another language. 
 ## Usage Examples [Symmetric Key Generation]
 
-1. You want to geneate a symmetric key using the library defaults? The default algorithm generates a 128 bit key for AES.
+1. You want SafEncrypt to generate a secure random symmetric key and use it for encryption purpose? 
+The generateKey() method doesn't require any parameter, and it automatically picks the algorithm set for the 'symmetricEncryption'.
+If the algorithm isn't defined, then it chooses the default algorithm and generates a 128-bit key for AES.
 
 ```java
+SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption()
+                        .generateKey()
+                        .plaintext(plainText)
+                        .encrypt();
 SecretKey secretKey = KeyGenerator.generateSymmetricKey();
 ```
 
-2. You want to generate a symmetric key specifying an algorithm for which the you want to use the key?
+Respectively, in this case below, it automatically picks the algorithm and generates a AES 256-bit key  
 
 ```java
-SecretKey secretKey = KeyGenerator.generateSymmetricKey(SymmetricAlgorithm.AES_GCM_128_NoPadding);
+SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                        .generateKey()
+                        .plaintext(plainText)
+                        .encrypt();
 ```
 
 3. You want to provide safEncrypt a password to generate the key? The wrapper support a default method for password based key generate as per the algorithm PBKDF2WithHmacSHA256. The usage is as follows:
@@ -221,7 +239,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 ```
 
-4. You want to provide safEncrypt a password to generate the key specify a key derviation algorithm as well? The wrapper supports two algorithm [PBKDF2WithHmacSHA256, PBKDF2WithHmacSHA512] currently for password based key generation. The algorithm can be specified as below:
+4. You want to provide safEncrypt a password to generate the key specify a key derivation algorithm as well? The wrapper supports two algorithm [PBKDF2WithHmacSHA256, PBKDF2WithHmacSHA512] currently for password based key generation. The algorithm can be specified as below:
 
 ```java
 SymmetricCipher symmetricCipher =
