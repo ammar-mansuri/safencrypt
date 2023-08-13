@@ -323,11 +323,9 @@ SymmetricCipher symmetricCipher =
 
 ```java
         byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
-        SymmetricAlgorithm symmetricAlgorithm = SymmetricAlgorithm.AES_GCM_192_NoPadding;
-        SecretKey secretKey = KeyGenerator.generateSymmetricKey(symmetricAlgorithm);
 
         SymmetricCipher symmetricCipher =
-                SafEncrypt.symmetricEncryption(symmetricAlgorithm)
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
