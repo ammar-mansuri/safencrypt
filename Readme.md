@@ -9,7 +9,7 @@ A cryptographic library that aims to ease down the process of symmetric encrypti
 
 ## Run Locally
 
-Option#1:
+**Option#1:**
 
 Place the provided 'safencrypt-1.0-SNAPSHOT.jar' JAR directly as a library in your project.
 
@@ -20,7 +20,7 @@ Eclipse: https://www.testingdocs.com/adding-an-external-library-to-an-eclipse-pr
 Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 
 
-Option#2:
+**Option#2:**
 
 Clone the project from Github: https://github.com/ammar-mansuri/safencrypt.git
 
