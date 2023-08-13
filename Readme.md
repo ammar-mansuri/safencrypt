@@ -5,8 +5,6 @@ A cryptographic library that aims to ease down the process of symmetric encrypti
 
 
 
-
-
 ## Run Locally
 
 **Option#1:**
@@ -19,6 +17,12 @@ Eclipse: https://www.testingdocs.com/adding-an-external-library-to-an-eclipse-pr
 
 Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 
+
+After you have imported the JAR, start with importing the SafEncrypt builder class which is the starting point of the library:
+
+```java
+import com.safencrypt.builder.SafEncrypt;
+```
 
 **Option#2:**
 
@@ -50,8 +54,11 @@ Import using maven in your project
 </dependency>
 ```
 
+After you have imported the JAR, start with importing the SafEncrypt builder class which is the starting point of the library:
 
-
+```java
+import com.safencrypt.builder.SafEncrypt;
+```
 
 
 
@@ -90,7 +97,7 @@ Import using maven in your project
     SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
 ```
 
-5. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
+7. Only the Algorithms in SymmetricAlgorithm class are currently supported. The algorithms in SymmetricAlgorithm class must also be declared as secure in the applications.yml file when extending the library. 
 
 ## IMPORTANT: Encoding/Decoding
 
@@ -116,7 +123,7 @@ OR (As the default encoding in java is UTF-8)
 ```
 
 
-## Configurations
+## Configurations [Skip if you dont want to update the DEFAULT configurations]
 
 SafEncrypt is developed configurable, the provides the user ease of Safe Defaults using Safe Defaults.
 
@@ -266,7 +273,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 
         byte[] decryptedText =
-                SafEncrypt.decryption()
+                SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -305,7 +312,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 
         byte[] decryptedText =
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -326,7 +333,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 
         byte[] decryptedText =
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
@@ -346,7 +353,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
 
         byte[] decryptedText =
-                SafEncrypt.decryption(symmetricCipher.symmetricAlgorithm())
+                SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext(), associatedData)
@@ -365,7 +372,7 @@ SymmetricCipher symmetricCipher =
                         .encrypt();
         
         byte[] decryptedText =
-                SafEncrypt.decryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
+                SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
                         .cipherText(symmetricCipher.ciphertext())
