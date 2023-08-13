@@ -319,26 +319,8 @@ SymmetricCipher symmetricCipher =
                         .decrypt();
 ```
 
-4. You want to encrypt/decrypt the data providing a specific Algorithm from the library ?
 
-```java
-        byte[] plainText = "Hello World JCA WRAPPER".getBytes(StandardCharsets.UTF_8);
-
-        SymmetricCipher symmetricCipher =
-                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
-                        .generateKey()
-                        .plaintext(plainText)
-                        .encrypt();
-
-        byte[] decryptedText =
-                SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
-                        .key(symmetricCipher.key())
-                        .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
-                        .decrypt();
-```
-
-5. You want to encrypt/decrypt the data using AES_GCM and also want to specify the Associated Data ?
+4. You want to encrypt/decrypt the data using AES_GCM and also want to specify the Associated Data ?
 
 ```java
         byte[] plainText = "Hello World JCA WRAPPER Using GCM With AEAD".getBytes(StandardCharsets.UTF_8);
@@ -358,7 +340,7 @@ SymmetricCipher symmetricCipher =
                         .decrypt();
 ```
 
-6. You want to encrypt/decrypt the data using AES_CBC algorithm ?
+5. You want to encrypt/decrypt the data using AES_CBC algorithm ?
 
 ```java
         byte[] plainText = "TESTING CBC 128 With PKCS5 PADDING".getBytes(StandardCharsets.UTF_8);
