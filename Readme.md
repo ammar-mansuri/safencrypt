@@ -225,7 +225,6 @@ SymmetricCipher symmetricCipher =
                         .generateKey()
                         .plaintext(plainText)
                         .encrypt();
-SecretKey secretKey = KeyGenerator.generateSymmetricKey();
 ```
 
 Respectively, in this case below, it automatically picks the algorithm and generates a AES 256-bit key  
