@@ -11,10 +11,21 @@ A cryptographic library that aims to ease down the process of symmetric encrypti
 
 Option#1:
 
-Clone the project from Github: https://
+Place the provided 'safencrypt-1.0-SNAPSHOT.jar' JAR directly as a library in your project.
+
+IntelliJ: https://www.jetbrains.com/help/idea/working-with-module-dependencies.html
+
+Eclipse: https://www.testingdocs.com/adding-an-external-library-to-an-eclipse-project/
+
+Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
+
+
+Option#2:
+
+Clone the project from Github: https://github.com/ammar-mansuri/safencrypt.git
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/ammar-mansuri/safencrypt.git
 ```
 
 Go to the project directory
@@ -40,15 +51,6 @@ Import using maven in your project
 ```
 
 
-Option#2:
-
-Place the provided 'safencrypt-1.0-SNAPSHOT.jar' JAR directly as a library in your project.
-
-IntelliJ: https://www.jetbrains.com/help/idea/working-with-module-dependencies.html
-
-Eclipse: https://www.testingdocs.com/adding-an-external-library-to-an-eclipse-project/
-
-Visual Studio Code: https://code.visualstudio.com/docs/java/java-project
 
 
 
