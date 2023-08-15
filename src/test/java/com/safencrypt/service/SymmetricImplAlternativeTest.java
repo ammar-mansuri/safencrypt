@@ -72,6 +72,29 @@ class SymmetricImplAlternativeTest {
     }*/
 
     @Test
+    void testSymmetricDecryptionUsingIncorrectLengthKey() {
+
+        byte[] randomKey = new byte[23];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(randomKey);
+
+        SymmetricCipher symmetricCipher =
+                SafEncrypt.symmetricEncryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                        .generateKey()
+                        .plaintext("Hello World".getBytes(StandardCharsets.UTF_8))
+                        .encrypt();
+
+        SafencryptException exception = Assertions.assertThrows(SafencryptException.class, () ->
+                SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
+                        .key(randomKey)
+                        .iv(symmetricCipher.iv())
+                        .cipherText(symmetricCipher.ciphertext())
+                        .decrypt()
+        );
+        System.err.println(exception.getMessage());
+    }
+
+    @Test
     void testSymmetricEncryptionUsingIncorrectLengthIV() {
 
         byte[] randomIv = new byte[23];
