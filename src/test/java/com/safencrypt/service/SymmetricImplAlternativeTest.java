@@ -88,7 +88,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_256_NoPadding)
                         .key(randomKey)
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt()
         );
         System.err.println(exception.getMessage());
@@ -111,7 +111,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(randomIv)
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt()
         );
         System.err.println(exception.getMessage());
@@ -149,7 +149,7 @@ class SymmetricImplAlternativeTest {
                     SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                             .key(symmetricCipher.key())
                             .iv(randomIv_Key)
-                            .cipherText(symmetricCipher.ciphertext())
+                            .cipherText(symmetricCipher.cipherText())
                             .decrypt();
                 }
         );
@@ -160,7 +160,7 @@ class SymmetricImplAlternativeTest {
                     SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                             .key(randomIv_Key)
                             .iv(symmetricCipher.iv())
-                            .cipherText(symmetricCipher.ciphertext())
+                            .cipherText(symmetricCipher.cipherText())
                             .decrypt();
                 }
         );
@@ -195,7 +195,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedDataModified)
+                        .cipherText(symmetricCipher.cipherText(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
 
@@ -220,7 +220,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(randomIv)
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt());
         System.err.println(exception1.getMessage());
 
@@ -232,7 +232,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(randomKey)
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt());
         System.err.println(exception2.getMessage());
     }
@@ -254,7 +254,7 @@ class SymmetricImplAlternativeTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedDataModified)
+                        .cipherText(symmetricCipher.cipherText(), associatedDataModified)
                         .decrypt());
         System.err.println(exception.getMessage());
     }

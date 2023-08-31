@@ -49,7 +49,7 @@ public class Utility {
         return new SymmetricCipherBase64(
                 Base64.getEncoder().encodeToString(symmetricCipher.iv()),
                 keyAlias,
-                Base64.getEncoder().encodeToString(symmetricCipher.ciphertext()),
+                Base64.getEncoder().encodeToString(symmetricCipher.cipherText()),
                 symmetricCipher.symmetricAlgorithm());
     }
 

@@ -59,7 +59,7 @@ class SafEncryptTest {
             SafEncrypt.symmetricDecryption()
                     .key(symmetricCipher.key())
                     .iv(symmetricCipher.iv())
-                    .cipherText(symmetricCipher.ciphertext(), "associatedData".getBytes(StandardCharsets.UTF_8))
+                    .cipherText(symmetricCipher.cipherText(), "associatedData".getBytes(StandardCharsets.UTF_8))
                     .decrypt();
         });
 
@@ -80,7 +80,7 @@ class SafEncryptTest {
                 .symmetricDecryption()
                 .key(symmetricCipher.key())
                 .iv(symmetricCipher.iv())
-                .cipherText(symmetricCipher.ciphertext())
+                .cipherText(symmetricCipher.cipherText())
                 .decrypt();
     }
 

@@ -275,7 +275,7 @@ SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 ```
 
@@ -294,7 +294,7 @@ SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 ```
 
@@ -314,7 +314,7 @@ SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 ```
 
@@ -335,7 +335,7 @@ SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedData)
+                        .cipherText(symmetricCipher.cipherText(), associatedData)
                         .decrypt();
 ```
 
@@ -354,7 +354,7 @@ SymmetricCipher symmetricCipher =
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 ```
 

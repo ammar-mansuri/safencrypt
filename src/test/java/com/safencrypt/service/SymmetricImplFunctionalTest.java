@@ -32,7 +32,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
@@ -55,7 +55,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption()
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
@@ -78,7 +78,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_GCM_192_NoPadding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
@@ -99,7 +99,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
 
@@ -123,7 +123,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
 
@@ -146,7 +146,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
 
@@ -172,7 +172,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext(), associatedData)
+                        .cipherText(symmetricCipher.cipherText(), associatedData)
                         .decrypt();
 
 
@@ -194,7 +194,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(SymmetricAlgorithm.AES_CBC_128_PKCS5Padding)
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
@@ -218,7 +218,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
@@ -239,7 +239,7 @@ class SymmetricImplFunctionalTest {
                 SafEncrypt.symmetricDecryption(symmetricCipher.symmetricAlgorithm())
                         .key(symmetricCipher.key())
                         .iv(symmetricCipher.iv())
-                        .cipherText(symmetricCipher.ciphertext())
+                        .cipherText(symmetricCipher.cipherText())
                         .decrypt();
 
         Assertions.assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(decryptedText, StandardCharsets.UTF_8));
